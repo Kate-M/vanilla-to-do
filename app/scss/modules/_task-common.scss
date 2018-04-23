@@ -1,0 +1,100 @@
+section:not(:last-child) {
+    margin-bottom: 20px;
+}
+main {
+    padding: 40px 0;
+}
+.form {
+    display: flex;
+}
+.task-form {
+    justify-content: space-between;
+}
+.field-wrap {
+    display: inline-block;
+}
+.field {
+    padding: 0 5px;
+    height: 35px;
+    border-radius: 3px;
+    border: 1px solid #E7E7E7;
+}
+.btn {
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    color:$color_white;
+    background: #736477;
+    border-radius: 3px;
+    &:hover {
+        background: darken(#736477, 5%)
+    }
+}
+.btn-group {
+    display: flex;
+    align-items: center;
+} 
+.btn-sm {
+    display: flex;
+    justify-content: center;
+     width: 30px;
+    height: 30px;
+    border-radius:50%;
+    margin-left: 10px;
+    color:$color_white;
+    .material-icons {
+            font-size: 2rem;
+    }
+}
+.btn-status {
+    background: #EEC780;
+    &:hover {
+        background: darken(#EEC780, 5%)
+    }
+}
+.btn-edit {
+    background: #7BBEC3;
+    &:hover {
+        background: darken(#7BBEC3, 5%)
+    }
+}
+.btn-delete-item {
+    background: #E27069;
+    &:hover {
+        background: darken(#E27069, 5%)
+    }
+}
+.btn-save {
+    background: #5ACBA5;
+    &:hover {
+        background: darken(#5ACBA5, 5%)
+        }
+}
+.btn-cancel {
+    background: #7BBEC3;
+    &:hover {
+        background: darken(#7BBEC3, 5%)
+    }
+}
+.not-progress .btn-status {
+    opacity: .5;
+    &:hover {
+        opacity: .7;
+    }
+}
+.inprogress .btn-status {
+    opacity: 1;
+}
+.complete {
+    .status-cntrl:checked+.name-field {
+        text-decoration: line-through;
+    }
+    .btn-status {
+        display: none;
+    }
+
+}
+.btn-lg {
+    padding: 0 10px;
+    margin-right: 10px;
+}

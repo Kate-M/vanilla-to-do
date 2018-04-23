@@ -1,0 +1,54 @@
+.tasks-container {
+    @media screen and (min-width: 767px) {
+        width: 50%;
+    }
+}    
+.tasks-wrap {
+    border: 2px solid #e7e7e7;
+    padding: 10px;
+    border-radius: 3px;
+    &:not(:last-child) {
+        margin-bottom: 10px;
+    }
+}
+.task-normal {
+    .status-cntrl {
+        width: 13px;
+        height: 13px;
+        border: 1px solid #E7E7E7;
+        margin-right: 10px;
+        position: relative;
+        display: inline-block;
+        vertical-align: middle;
+        cursor: pointer;
+        &:checked {
+            border: 1px solid #5ACBA5;
+            &:after {
+                content: '';
+                display: block;
+                width: 3px;
+                height: 10px;
+                margin-left: 3px;
+                margin-top: -2px;
+                border: solid #5ACBA5;
+                border-width: 0 2px 2px 0;
+                -webkit-transform: rotate(45deg);
+                -ms-transform: rotate(45deg);
+                transform: rotate(45deg);
+                position: absolute;
+                top: 0;
+            }
+        }
+    }
+    .name-field {
+        border:0;
+        height: 35px;
+        align-items: center;
+        display: inline-flex;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        @media screen and (max-width: 767px) {
+            max-width: 77px;
+        }
+    }
+}

@@ -2,6 +2,9 @@ const path = require('path');
 const postcss = require('autoprefixer');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const LiveReloadPlugin = require('webpack-livereload-plugin');
+const CopyWebPackPlugin = require('copy-webpack-plugin');
+
+console.log(path.resolve(__dirname, './node_modules/compass-mixins/lib'));
 
 module.exports = {
     entry: [
@@ -15,48 +18,51 @@ module.exports = {
     devtool: "source-map",
     module: {
         rules: [{
-            test: /\.js$/,
-            include: path.resolve(__dirname, 'app/js'),
-            use: {
-                loader: 'babel-loader',
-                options: {
-                    presets: 'env'
+                test: /\.js$/,
+                include: path.resolve(__dirname, 'app/js'),
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: 'env'
+                    }
                 }
+            },
+            {
+                test: /\.(sass|scss)$/,
+                include: path.resolve(__dirname, 'app/scss'),
+                use: ExtractTextPlugin.extract({
+                    use: [{
+                            loader: "css-loader",
+                            options: {
+                                sourceMap: true,
+                                minimize: true,
+                                url: false
+                            }
+                        },
+                        {
+                            loader: "postcss-loader",
+                            options: {
+                                sourceMap: true
+                            }
+                        },
+                        {
+                            loader: "sass-loader",
+                            options: {
+                                includePaths: [
+
+                                    path.resolve(__dirname, './node_modules/compass-mixins/lib')
+                                ]
+                            }
+                        },
+                        // {
+                        //     loader: 'sass-resources-loader',
+                        //     options: {
+                        //         resources: 'app/scss/base.scss'
+                        //     }
+                        // }
+                    ]
+                })
             }
-        },
-        {
-            test: /\.(sass|scss)$/,
-            include: path.resolve(__dirname, 'app/scss'),
-            use: ExtractTextPlugin.extract({
-                use: [{
-                    loader: "css-loader",
-                    options: {
-                        sourceMap: true,
-                        minimize: true,
-                        url: false
-                    }
-                },
-                {
-                    loader: "postcss-loader",
-                    options: {
-                        sourceMap: true
-                    }
-                },
-                {
-                    loader: "sass-loader",
-                    options: {
-                        sourceMap: true
-                    }
-                }
-                ]
-            })
-        },
-        {
-            test: /\.(woff|woff2|eot|ttf|otf)$/,
-            use: [
-                'file-loader'
-            ]
-        }
         ]
     },
     plugins: [
@@ -65,6 +71,10 @@ module.exports = {
         new ExtractTextPlugin({
             filename: './css/style.css',
             allChunks: true,
-        })
+        }),
+        new CopyWebPackPlugin([{
+            from: './app/fonts',
+            to: './fonts'
+        }])
     ]
 };
