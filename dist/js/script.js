@@ -82,79 +82,85 @@
 
 
 var doc = document;
-// let tasksListTempBD = [{status:0, id:0, name:'Task1'}];
-// let serialTasksList = JSON.stringify(tasksListTempBD);
-// localStorage.setItem("tasksBD", serialTasksList);
 var taskArea = doc.querySelector(".tasks-container");
+var tasksList = [];
 
 function init() {
-    var tasksList = JSON.parse(localStorage.getItem("tasksBD"));
-
-    tasksList.forEach(function (el, index, arr) {
-        drowNewTasks(el.name);
-    });
-
     doc.getElementById('add-task').addEventListener('click', createNewTasks);
-
-    function createNewTasks(evnt) {
-        evnt.preventDefault();
-        var taskItem = {
-            status: 0
-        };
-        var taksName = doc.querySelector('.add-field').value;
-        if (taksName) {
-            taskItem.id = tasksList[tasksList.length - 1].id + 1;
-            taskItem.name = taksName;
-            tasksList.push(taskItem);
-            doc.querySelector('.add-field').value = '';
-            sendTaskInLocalBD(tasksList);
-            drowNewTasks(taksName);
-        }
-    }
-    function sendTaskInLocalBD(tasksList) {
-        var serialTasksList = JSON.stringify(tasksList);
-        localStorage.setItem("tasksBD", serialTasksList);
-    }
-    function drowNewTasks(taksName) {
-        var newTask = doc.createElement('div');
-        newTask.setAttribute('class', 'tasks-wrap');
-        taskArea.insertBefore(newTask, taskArea.firstChild);
-
-        var taskForm = doc.createElement('form');
-        taskForm.setAttribute('class', 'form task-form task-normal not-progress');
-        newTask.appendChild(taskForm);
-
-        var taskFieldset = doc.createElement('fieldset');
-        taskFieldset.setAttribute('class', 'field-wrap');
-        taskForm.appendChild(taskFieldset);
-
-        var taskInput = doc.createElement('input');
-        taskInput.setAttribute('class', 'status-cntrl');
-        taskInput.setAttribute('type', 'checkbox');
-        taskFieldset.appendChild(taskInput);
-
-        var taskText = doc.createElement('p');
-        taskText.setAttribute('class', 'field name-field');
-        taskFieldset.appendChild(taskText);
-        taskText.innerHTML = taksName;
-
-        var taskButtonWrap = doc.createElement('div');
-        taskButtonWrap.setAttribute('class', 'btn-group');
-        taskForm.appendChild(taskButtonWrap);
-
-        var taskButtonSatus = doc.createElement('button');
-        taskButtonSatus.setAttribute('class', 'btn btn-sm btn-status');
-        taskButtonWrap.appendChild(taskButtonSatus);
-
-        var taskButtonEdit = doc.createElement('button');
-        taskButtonEdit.setAttribute('class', 'btn btn-sm btn-edit');
-        taskButtonWrap.appendChild(taskButtonEdit);
-
-        var taskButtonDeleteItem = doc.createElement('button');
-        taskButtonDeleteItem.setAttribute('class', 'btn btn-sm btn-delete-item');
-        taskButtonWrap.appendChild(taskButtonDeleteItem);
+    if (localStorage.getItem('tasksBD')) {
+        tasksList = JSON.parse(localStorage.getItem("tasksBD"));
+        tasksList.forEach(function (el, index, arr) {
+            drowNewTasks(el.name);
+        });
     }
 }
+
+function createNewTasks(evnt) {
+    evnt.preventDefault();
+    var taskItem = {
+        status: 0
+    };
+    var taksName = doc.querySelector('.add-field').value;
+    if (taksName) {
+        if (tasksList.length != 0) {
+            taskItem.id = tasksList[tasksList.length - 1].id + 1;
+        } else {
+            taskItem.id = 0;
+        }
+        taskItem.id = 0;
+        taskItem.name = taksName;
+        tasksList.push(taskItem);
+        doc.querySelector('.add-field').value = '';
+        sendTaskInLocalBD(tasksList);
+        drowNewTasks(taksName);
+    }
+}
+
+function sendTaskInLocalBD(tasksList) {
+    var serialTasksList = JSON.stringify(tasksList);
+    localStorage.setItem("tasksBD", serialTasksList);
+}
+
+function drowNewTasks(taksName) {
+    var newTask = doc.createElement('div');
+    newTask.setAttribute('class', 'tasks-wrap');
+    taskArea.insertBefore(newTask, taskArea.firstChild);
+
+    var taskForm = doc.createElement('form');
+    taskForm.setAttribute('class', 'form task-form task-normal not-progress');
+    newTask.appendChild(taskForm);
+
+    var taskFieldset = doc.createElement('fieldset');
+    taskFieldset.setAttribute('class', 'field-wrap');
+    taskForm.appendChild(taskFieldset);
+
+    var taskInput = doc.createElement('input');
+    taskInput.setAttribute('class', 'status-cntrl');
+    taskInput.setAttribute('type', 'checkbox');
+    taskFieldset.appendChild(taskInput);
+
+    var taskText = doc.createElement('p');
+    taskText.setAttribute('class', 'field name-field');
+    taskFieldset.appendChild(taskText);
+    taskText.innerHTML = taksName;
+
+    var taskButtonWrap = doc.createElement('div');
+    taskButtonWrap.setAttribute('class', 'btn-group');
+    taskForm.appendChild(taskButtonWrap);
+
+    var taskButtonSatus = doc.createElement('button');
+    taskButtonSatus.setAttribute('class', 'btn btn-sm btn-status');
+    taskButtonWrap.appendChild(taskButtonSatus);
+
+    var taskButtonEdit = doc.createElement('button');
+    taskButtonEdit.setAttribute('class', 'btn btn-sm btn-edit');
+    taskButtonWrap.appendChild(taskButtonEdit);
+
+    var taskButtonDeleteItem = doc.createElement('button');
+    taskButtonDeleteItem.setAttribute('class', 'btn btn-sm btn-delete-item');
+    taskButtonWrap.appendChild(taskButtonDeleteItem);
+}
+
 doc.addEventListener('DOMContentLoaded', init);
 
 /***/ }),
