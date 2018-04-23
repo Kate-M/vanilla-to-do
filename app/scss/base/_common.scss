@@ -18,7 +18,7 @@ input,select, textarea, option {
     -webkit-appearance: none;
     border-radius:0;
     border: 0;
-    letter-spacing: 0.4px;
+    padding: 0;
     &:focus, &:active {
       outline:0;
     }
@@ -86,8 +86,6 @@ footer {
 .container {
     width: 100%;
     margin: 0 auto;
-}
-.container {
     @media screen and (max-width: 768px) {
         padding: 0 20px;
     }
@@ -95,4 +93,4 @@ footer {
         max-width: 720px;
         padding: 0;
     }
-} 
+}
