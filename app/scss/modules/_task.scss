@@ -24,19 +24,15 @@
         &:checked {
             border: 1px solid #5ACBA5;
             &:after {
-                content: '';
+                content: '\e909';
                 display: block;
-                width: 3px;
-                height: 10px;
-                margin-left: 3px;
-                margin-top: -2px;
-                border: solid #5ACBA5;
-                border-width: 0 2px 2px 0;
-                -webkit-transform: rotate(45deg);
-                -ms-transform: rotate(45deg);
-                transform: rotate(45deg);
+                color:#5ACBA5;
+                font-size: 1.2rem;
                 position: absolute;
                 top: 0;
+                left:0;
+                font-family: $font_ico;
+                font-weight: bold;
             }
         }
     }
@@ -51,4 +47,7 @@
             max-width: 77px;
         }
     }
+}
+.task-editable {
+    display: none;
 }

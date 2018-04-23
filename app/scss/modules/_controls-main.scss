@@ -9,8 +9,18 @@
             margin-bottom: 10px;
         }
     }
-    .btn {
-        width: 35px;
+    .field {
+        min-width: 200px;
+    }
+    .add-btn {
+        &::after {
+            content: '\e908';
+        }
+    }
+    .search-btn {
+        &::after {
+            content: '\e906';
+        }
     }
 }
 .filter-task {
@@ -25,14 +35,19 @@
     }
     .filter-btn {
         position: relative;
+        display: block;
         &::after {
+            content: '\e907';
             position: absolute;
             top:0;
             right: 0;
-            display: flex;
-            align-items: center;
+            font-size: 1.4rem;
             height: 100%;
             padding-right: 10px;
+            font-family: $font_ico;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     }
     .filter-select {
