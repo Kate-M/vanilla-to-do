@@ -23,6 +23,7 @@ main {
     display: flex;
     justify-content: center;
     position: relative;
+    align-items: center;
     &::after {
         content: '';
         font-family: $font_ico;
