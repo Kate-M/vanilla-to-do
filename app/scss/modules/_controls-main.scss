@@ -25,14 +25,19 @@
     }
     .filter-btn {
         position: relative;
+        display: block;
         &::after {
+            content: '>';
             position: absolute;
             top:0;
             right: 0;
+            height: 15px;
+            width: 35px;
             display: flex;
             align-items: center;
+            justify-content: center;
             height: 100%;
-            padding-right: 10px;
+            transform: rotate(90deg);
         }
     }
     .filter-select {

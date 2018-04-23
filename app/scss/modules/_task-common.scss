@@ -85,14 +85,13 @@ main {
 .inprogress .btn-status {
     opacity: 1;
 }
+.status-cntrl:checked+.name-field {
+    text-decoration: line-through;
+}
 .complete {
-    .status-cntrl:checked+.name-field {
-        text-decoration: line-through;
-    }
     .btn-status {
         display: none;
     }
-
 }
 .btn-lg {
     padding: 0 10px;
