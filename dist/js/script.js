@@ -118,8 +118,6 @@ function init() {
     function drowNewTasks(taksName) {
         var newTask = doc.createElement('div');
         newTask.setAttribute('class', 'tasks-wrap');
-        // taskArea.appendChild(newTask);
-
         taskArea.insertBefore(newTask, taskArea.firstChild);
 
         var taskForm = doc.createElement('form');
@@ -145,15 +143,15 @@ function init() {
         taskForm.appendChild(taskButtonWrap);
 
         var taskButtonSatus = doc.createElement('button');
-        taskButtonSatus.setAttribute('class', 'btn-sm btn-status');
+        taskButtonSatus.setAttribute('class', 'btn btn-sm btn-status');
         taskButtonWrap.appendChild(taskButtonSatus);
 
         var taskButtonEdit = doc.createElement('button');
-        taskButtonEdit.setAttribute('class', 'btn-sm btn-edit');
+        taskButtonEdit.setAttribute('class', 'btn btn-sm btn-edit');
         taskButtonWrap.appendChild(taskButtonEdit);
 
         var taskButtonDeleteItem = doc.createElement('button');
-        taskButtonDeleteItem.setAttribute('class', 'btn-sm btn-delete-item');
+        taskButtonDeleteItem.setAttribute('class', 'btn btn-sm btn-delete-item');
         taskButtonWrap.appendChild(taskButtonDeleteItem);
     }
 }

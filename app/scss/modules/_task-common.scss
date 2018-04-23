@@ -1,5 +1,5 @@
 section:not(:last-child) {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 main {
     padding: 40px 0;
@@ -20,14 +20,33 @@ main {
     border: 1px solid #E7E7E7;
 }
 .btn {
-    height: 35px;
     display: flex;
     justify-content: center;
-    color:$color_white;
+    position: relative;
+    &::after {
+        content: '';
+        font-family: $font_ico;
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top:0;
+        left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color:$color_white;
+        font-size: 1.8rem;
+    }
+}
+.btn-md,
+.btn-lg {
+    height: 35px;
+    width: 35px;
     background: #736477;
     border-radius: 3px;
+    color:$color_white;
     &:hover {
-        background: darken(#736477, 5%)
+        background: darken(#736477, 10%)
     }
 }
 .btn-group {
@@ -35,45 +54,48 @@ main {
     align-items: center;
 } 
 .btn-sm {
-    display: flex;
-    justify-content: center;
-     width: 30px;
+    width: 30px;
     height: 30px;
     border-radius:50%;
     margin-left: 10px;
-    color:$color_white;
-    .material-icons {
-            font-size: 2rem;
-    }
 }
 .btn-status {
     background: #EEC780;
     &:hover {
-        background: darken(#EEC780, 5%)
+        background: darken(#EEC780, 10%)
+    }
+    &::after {
+        content: '\e905';
     }
 }
 .btn-edit {
     background: #7BBEC3;
     &:hover {
-        background: darken(#7BBEC3, 5%)
+        background: darken(#7BBEC3, 10%)
+    }
+    &::after {
+        content: '\e903';
     }
 }
 .btn-delete-item {
     background: #E27069;
     &:hover {
-        background: darken(#E27069, 5%)
+        background: darken(#E27069, 10%)
+    }
+    &::after {
+        content: '\e904';
     }
 }
 .btn-save {
     background: #5ACBA5;
     &:hover {
-        background: darken(#5ACBA5, 5%)
+        background: darken(#5ACBA5, 10%)
         }
 }
 .btn-cancel {
     background: #7BBEC3;
     &:hover {
-        background: darken(#7BBEC3, 5%)
+        background: darken(#7BBEC3, 10%)
     }
 }
 .not-progress .btn-status {
@@ -96,4 +118,5 @@ main {
 .btn-lg {
     padding: 0 10px;
     margin-right: 10px;
+    min-width: 130px;
 }

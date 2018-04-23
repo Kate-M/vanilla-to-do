@@ -36,8 +36,6 @@ function init() {
     function drowNewTasks(taksName){
             let newTask = doc.createElement('div');
             newTask.setAttribute('class','tasks-wrap');
-            // taskArea.appendChild(newTask);
-
             taskArea.insertBefore(newTask, taskArea.firstChild);
 
             let taskForm = doc.createElement('form');
@@ -63,15 +61,15 @@ function init() {
             taskForm.appendChild(taskButtonWrap);
 
             let taskButtonSatus = doc.createElement('button');
-            taskButtonSatus.setAttribute('class','btn-sm btn-status');
+            taskButtonSatus.setAttribute('class','btn btn-sm btn-status');
             taskButtonWrap.appendChild(taskButtonSatus);
 
             let taskButtonEdit = doc.createElement('button');
-            taskButtonEdit.setAttribute('class','btn-sm btn-edit');
+            taskButtonEdit.setAttribute('class','btn btn-sm btn-edit');
             taskButtonWrap.appendChild(taskButtonEdit);
 
             let taskButtonDeleteItem = doc.createElement('button');
-            taskButtonDeleteItem.setAttribute('class','btn-sm btn-delete-item');
+            taskButtonDeleteItem.setAttribute('class','btn btn-sm btn-delete-item');
             taskButtonWrap.appendChild(taskButtonDeleteItem);
         
     }
