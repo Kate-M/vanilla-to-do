@@ -71,53 +71,6 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./app/js/cancel-task.js":
-/*!*******************************!*\
-  !*** ./app/js/cancel-task.js ***!
-  \*******************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.cancelTask = undefined;
-
-var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
-
-var cancelTask = exports.cancelTask = function cancelTask(form) {
-    form.parentNode.classList.remove('edit-mode');
-    form.remove();
-};
-
-/***/ }),
-
-/***/ "./app/js/clear-form.js":
-/*!******************************!*\
-  !*** ./app/js/clear-form.js ***!
-  \******************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.clearForm = clearForm;
-
-var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
-
-function clearForm() {
-    _constant.doc.querySelector('.add-field').value = '';
-}
-
-/***/ }),
-
 /***/ "./app/js/constant.js":
 /*!****************************!*\
   !*** ./app/js/constant.js ***!
@@ -131,239 +84,22 @@ function clearForm() {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-var doc = document;
-var taskArea = doc.querySelector(".tasks-container");
+var taskArea = document.querySelector(".tasks-container");
 var status = {
     default: 0,
     processing: 1,
     completed: 2
 };
 
-exports.doc = doc;
 exports.taskArea = taskArea;
 exports.status = status;
 
 /***/ }),
 
-/***/ "./app/js/create-task.js":
-/*!*******************************!*\
-  !*** ./app/js/create-task.js ***!
-  \*******************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.createNewTasks = createNewTasks;
-
-var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
-
-var _index = __webpack_require__(/*! ./index */ "./app/js/index.js");
-
-var _clearForm = __webpack_require__(/*! ./clear-form */ "./app/js/clear-form.js");
-
-var _drawTask = __webpack_require__(/*! ./draw-task */ "./app/js/draw-task.js");
-
-function createNewTasks(evnt) {
-    evnt.preventDefault();
-    var taskItem = {
-        status: _constant.status.default
-    };
-    var taskName = _constant.doc.querySelector('.add-field').value;
-    if (taskName) {
-        if (_index.tasksList.length != 0) {
-            taskItem.id = _index.tasksList[_index.tasksList.length - 1].id + 1;
-        } else {
-            taskItem.id = 0;
-        }
-        taskItem.name = taskName;
-        var taskId = taskItem.id;
-        _index.tasksList.push(taskItem);
-        (0, _clearForm.clearForm)();
-        (0, _index.sendTaskInLocalDB)(_index.tasksList);
-        (0, _drawTask.drawTask)(taskName, taskId);
-    }
-}
-
-/***/ }),
-
-/***/ "./app/js/delete-task.js":
-/*!*******************************!*\
-  !*** ./app/js/delete-task.js ***!
-  \*******************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.deleteTask = undefined;
-
-var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
-
-var _index = __webpack_require__(/*! ./index */ "./app/js/index.js");
-
-var deleteTask = exports.deleteTask = function deleteTask(id) {
-    _index.tasksList.map(function (el, index, array) {
-        if (array[index].id == id) {
-            array.splice(index, 1);
-        }
-        (0, _index.sendTaskInLocalDB)(array);
-    });
-};
-
-/***/ }),
-
-/***/ "./app/js/draw-edit.js":
-/*!*****************************!*\
-  !*** ./app/js/draw-edit.js ***!
-  \*****************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.drawEditMode = drawEditMode;
-
-var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
-
-function drawEditMode(container, name, id) {
-    var taskForm = _constant.doc.createElement('form');
-    taskForm.setAttribute('class', 'form task-form task-editable');
-    container.appendChild(taskForm);
-
-    var taskFieldset = _constant.doc.createElement('fieldset');
-    taskFieldset.setAttribute('class', 'field-wrap');
-    taskForm.appendChild(taskFieldset);
-
-    var taskInput = _constant.doc.createElement('input');
-    taskInput.setAttribute('class', 'field name-field');
-    taskInput.setAttribute('type', 'text');
-    taskInput.setAttribute('data-id', '' + id);
-    taskFieldset.appendChild(taskInput);
-    taskInput.value = name;
-
-    var taskButtonWrap = _constant.doc.createElement('div');
-    taskButtonWrap.setAttribute('class', 'btn-group');
-    taskForm.appendChild(taskButtonWrap);
-
-    var taskButtonSave = _constant.doc.createElement('button');
-    taskButtonSave.setAttribute('class', 'btn btn-sm btn-save');
-    taskButtonSave.setAttribute('data-state', 'save-task');
-    taskButtonWrap.appendChild(taskButtonSave);
-
-    var taskButtonCancel = _constant.doc.createElement('button');
-    taskButtonCancel.setAttribute('class', 'btn btn-sm btn-cancel');
-    taskButtonCancel.setAttribute('data-state', 'cancel-task');
-    taskButtonWrap.appendChild(taskButtonCancel);
-}
-
-/***/ }),
-
-/***/ "./app/js/draw-task.js":
-/*!*****************************!*\
-  !*** ./app/js/draw-task.js ***!
-  \*****************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.drawTask = drawTask;
-
-var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
-
-function drawTask(name, id) {
-    var newTask = _constant.doc.createElement('div');
-    newTask.setAttribute('class', 'tasks-wrap');
-    _constant.taskArea.insertBefore(newTask, _constant.taskArea.firstChild);
-
-    var taskForm = _constant.doc.createElement('form');
-    taskForm.setAttribute('class', 'form task-form task-normal not-progress');
-    newTask.appendChild(taskForm);
-
-    var taskFieldset = _constant.doc.createElement('fieldset');
-    taskFieldset.setAttribute('class', 'field-wrap');
-    taskForm.appendChild(taskFieldset);
-
-    var taskInput = _constant.doc.createElement('input');
-    taskInput.setAttribute('class', 'status-cntrl');
-    taskInput.setAttribute('type', 'checkbox');
-    taskFieldset.appendChild(taskInput);
-
-    var taskText = _constant.doc.createElement('p');
-    taskText.setAttribute('class', 'field name-field');
-    taskText.setAttribute('data-id', '' + id);
-    taskFieldset.appendChild(taskText);
-    taskText.innerHTML = name;
-
-    var taskButtonWrap = _constant.doc.createElement('div');
-    taskButtonWrap.setAttribute('class', 'btn-group');
-    taskForm.appendChild(taskButtonWrap);
-
-    var taskButtonStatus = _constant.doc.createElement('button');
-    taskButtonStatus.setAttribute('class', 'btn btn-sm btn-status');
-    taskButtonWrap.appendChild(taskButtonStatus);
-
-    var taskButtonEdit = _constant.doc.createElement('button');
-    taskButtonEdit.setAttribute('class', 'btn btn-sm btn-edit');
-    taskButtonEdit.setAttribute('data-state', 'edit-task');
-    taskButtonWrap.appendChild(taskButtonEdit);
-
-    var taskButtonDeleteItem = _constant.doc.createElement('button');
-    taskButtonDeleteItem.setAttribute('class', 'btn btn-sm btn-delete-item');
-    taskButtonDeleteItem.setAttribute('data-state', 'delete-task');
-    taskButtonWrap.appendChild(taskButtonDeleteItem);
-}
-
-/***/ }),
-
-/***/ "./app/js/edit-task.js":
-/*!*****************************!*\
-  !*** ./app/js/edit-task.js ***!
-  \*****************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.editTask = undefined;
-
-var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
-
-var _drawEdit = __webpack_require__(/*! ./draw-edit */ "./app/js/draw-edit.js");
-
-var editTask = exports.editTask = function editTask(form, name, id) {
-    var containerTask = form.parentNode;
-    containerTask.classList.add('edit-mode');
-    (0, _drawEdit.drawEditMode)(containerTask, name, id);
-};
-
-/***/ }),
-
-/***/ "./app/js/events.js":
-/*!**************************!*\
-  !*** ./app/js/events.js ***!
-  \**************************/
+/***/ "./app/js/controller.js":
+/*!******************************!*\
+  !*** ./app/js/controller.js ***!
+  \******************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -375,22 +111,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.startEvents = startEvents;
 
-var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
-
-var _createTask = __webpack_require__(/*! ./create-task */ "./app/js/create-task.js");
-
-var _editTask = __webpack_require__(/*! ./edit-task */ "./app/js/edit-task.js");
-
-var _deleteTask = __webpack_require__(/*! ./delete-task */ "./app/js/delete-task.js");
-
-var _saveTask = __webpack_require__(/*! ./save-task */ "./app/js/save-task.js");
-
-var _cancelTask = __webpack_require__(/*! ./cancel-task */ "./app/js/cancel-task.js");
+var _taskLogic = __webpack_require__(/*! ./task-logic */ "./app/js/task-logic.js");
 
 function startEvents() {
-    _constant.doc.getElementById('add-task').addEventListener('click', _createTask.createNewTasks);
+    document.getElementById('add-task').addEventListener('click', _taskLogic.createNewTasks);
 
-    _constant.doc.querySelectorAll('.tasks-wrap').forEach(function (el) {
+    document.querySelectorAll('.tasks-wrap').forEach(function (el) {
         return el.onclick = function (evnt) {
             evnt.preventDefault();
             var targetForm = evnt.target.closest('form');
@@ -400,16 +126,16 @@ function startEvents() {
 
             switch (targetButton) {
                 case 'delete-task':
-                    (0, _deleteTask.deleteTask)(targetTaskId);
+                    (0, _taskLogic.deleteTask)(targetTaskId);
                     break;
                 case 'edit-task':
-                    (0, _editTask.editTask)(targetForm, targetTaskName, targetTaskId);
+                    (0, _taskLogic.editTask)(targetForm, targetTaskName, targetTaskId);
                     break;
                 case 'cancel-task':
-                    (0, _cancelTask.cancelTask)(targetForm);
+                    (0, _taskLogic.cancelTask)(targetForm);
                     break;
                 case 'save-task':
-                    (0, _saveTask.saveTask)(targetForm, targetTaskId);
+                    (0, _taskLogic.saveTask)(targetForm, targetTaskId);
                     break;
                 default:
                     console.log('other');
@@ -417,6 +143,41 @@ function startEvents() {
         };
     });
 }
+
+/***/ }),
+
+/***/ "./app/js/dom.js":
+/*!***********************!*\
+  !*** ./app/js/dom.js ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.drawEditMode = exports.drawTask = undefined;
+
+var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
+
+function drawTask(name, id) {
+    var newTask = document.createElement('div');
+    newTask.setAttribute('class', 'tasks-wrap');
+    _constant.taskArea.insertBefore(newTask, _constant.taskArea.firstChild);
+
+    newTask.innerHTML = '<form action="smth" class="form task-form task-normal not-progress">\n            <fieldset class="field-wrap">\n                <input type="checkbox" class="status-cntrl">\n                <p class="field name-field" data-id="' + id + '">' + name + '</p>\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n            </div>\n        </form>';
+}
+
+function drawEditMode(container, name, id) {
+
+    container.innerHTML = '<form action="smth" class="form task-form task-editable">\n            <fieldset class="field-wrap">\n                <input type="text" class="field name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>';
+}
+
+exports.drawTask = drawTask;
+exports.drawEditMode = drawEditMode;
 
 /***/ }),
 
@@ -438,13 +199,10 @@ exports.sendTaskInLocalDB = sendTaskInLocalDB;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
-var _events = __webpack_require__(/*! ./events */ "./app/js/events.js");
+var _controller = __webpack_require__(/*! ./controller */ "./app/js/controller.js");
 
-var _drawTask = __webpack_require__(/*! ./draw-task */ "./app/js/draw-task.js");
+var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
 
-// import { drawEditMode } from './drawEdit';
-// const doc = document;
-// let taskArea = doc.querySelector(".tasks-container");
 var tasksList = exports.tasksList = [];
 
 function init() {
@@ -453,14 +211,14 @@ function init() {
         if (localStorage.getItem('tasksDB')) {
             exports.tasksList = tasksList = JSON.parse(localStorage.getItem("tasksDB"));
             tasksList.forEach(function (el) {
-                return (0, _drawTask.drawTask)(el.name, el.id);
+                return (0, _dom.drawTask)(el.name, el.id);
             });
         }
     } else {
         console.log('Sorry! No Web Storage support');
     }
 
-    (0, _events.startEvents)();
+    (0, _controller.startEvents)();
 }
 
 function sendTaskInLocalDB(tasksList) {
@@ -469,14 +227,14 @@ function sendTaskInLocalDB(tasksList) {
     location.reload();
 }
 
-_constant.doc.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', init);
 
 /***/ }),
 
-/***/ "./app/js/save-task.js":
-/*!*****************************!*\
-  !*** ./app/js/save-task.js ***!
-  \*****************************/
+/***/ "./app/js/task-logic.js":
+/*!******************************!*\
+  !*** ./app/js/task-logic.js ***!
+  \******************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -486,13 +244,50 @@ _constant.doc.addEventListener('DOMContentLoaded', init);
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.saveTask = undefined;
+exports.cancelTask = exports.saveTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
 var _index = __webpack_require__(/*! ./index */ "./app/js/index.js");
 
-var saveTask = exports.saveTask = function saveTask(form, id) {
+var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
+
+function createNewTasks(evnt) {
+    evnt.preventDefault();
+    var taskItem = {
+        status: _constant.status.default
+    };
+    var taskName = document.querySelector('.add-field').value;
+    if (taskName) {
+        if (_index.tasksList.length != 0) {
+            taskItem.id = _index.tasksList[_index.tasksList.length - 1].id + 1;
+        } else {
+            taskItem.id = 0;
+        }
+        taskItem.name = taskName;
+        var taskId = taskItem.id;
+        _index.tasksList.push(taskItem);
+        document.querySelector('.add-field').value = '';
+        (0, _index.sendTaskInLocalDB)(_index.tasksList);
+        (0, _dom.drawTask)(taskName, taskId);
+    }
+}
+var deleteTask = function deleteTask(id) {
+    _index.tasksList.map(function (el, index, array) {
+        if (array[index].id == id) {
+            array.splice(index, 1);
+        }
+        (0, _index.sendTaskInLocalDB)(array);
+    });
+};
+
+var editTask = function editTask(form, name, id) {
+    var containerTask = form.parentNode;
+    containerTask.classList.add('edit-mode');
+    (0, _dom.drawEditMode)(containerTask, name, id);
+};
+
+var saveTask = function saveTask(form, id) {
     var newTaskName = form.querySelector('.name-field').value.trim();
     _index.tasksList.map(function (el, index, array) {
         if (array[index].id == id && newTaskName != '') {
@@ -501,6 +296,17 @@ var saveTask = exports.saveTask = function saveTask(form, id) {
         (0, _index.sendTaskInLocalDB)(array);
     });
 };
+
+var cancelTask = function cancelTask(form) {
+    form.parentNode.classList.remove('edit-mode');
+    form.remove();
+};
+
+exports.createNewTasks = createNewTasks;
+exports.deleteTask = deleteTask;
+exports.editTask = editTask;
+exports.saveTask = saveTask;
+exports.cancelTask = cancelTask;
 
 /***/ }),
 

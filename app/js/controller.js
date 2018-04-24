@@ -1,14 +1,9 @@
-import { doc } from './constant';
-import { createNewTasks } from './create-task';
-import { editTask } from './edit-task';
-import { deleteTask } from './delete-task';
-import { saveTask } from './save-task';
-import { cancelTask } from './cancel-task';
+import { createNewTasks, deleteTask, editTask, saveTask, cancelTask } from './task-logic'
 
 export function startEvents() {
-    doc.getElementById('add-task').addEventListener('click', createNewTasks);
+    document.getElementById('add-task').addEventListener('click', createNewTasks);
 
-    doc.querySelectorAll('.tasks-wrap').forEach(
+    document.querySelectorAll('.tasks-wrap').forEach(
         el => el.onclick = function (evnt) {
             evnt.preventDefault();
             let targetForm = evnt.target.closest('form');

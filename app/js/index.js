@@ -1,10 +1,8 @@
-import { doc, status } from './constant';
-import { startEvents } from './events';
-import { drawTask } from './draw-task';
-// import { drawEditMode } from './drawEdit';
-// const doc = document;
-// let taskArea = doc.querySelector(".tasks-container");
-export let tasksList = [];
+import { status } from './constant';
+import { startEvents } from './controller';
+import { drawTask } from './dom';
+
+export var tasksList = [];
 
 function init() {
 
@@ -26,4 +24,4 @@ export function sendTaskInLocalDB(tasksList) {
     location.reload();
 }
 
-doc.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', init);
