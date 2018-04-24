@@ -57,7 +57,6 @@ function createNewTasks(evnt) {
         clearForm();
         sendTaskInLocalDB(tasksList);
         drawTask(taskName, taskId);
-        location.reload();
     }
 }
 function clearForm() {
@@ -67,6 +66,15 @@ function clearForm() {
 function sendTaskInLocalDB(tasksList) {
     let serialTasksList = JSON.stringify(tasksList);
     localStorage.setItem("tasksDB", serialTasksList);
+    location.reload();
+}
+var deleteTask = function (id) {
+    tasksList.map((el, index, array) => {
+        if (array[index].id == id) {
+            array.splice(index, 1);
+        }
+        sendTaskInLocalDB(array);
+    })
 }
 
 function drawTask(name, id) {
@@ -111,15 +119,4 @@ function drawTask(name, id) {
     taskButtonWrap.appendChild(taskButtonDeleteItem);
 }
 
-var deleteTask = function (id) {
-    tasksList.map((el, index, array) => {
-        if (array[index].id == id) {
-            array.splice(index, 1);
-            console.log(array);
-        }
-        let serialTaskList = JSON.stringify(tasksList);
-        localStorage.setItem("tasksDB", serialTaskList);
-        location.reload();
-    })
-}
 doc.addEventListener('DOMContentLoaded', init);

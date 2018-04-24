@@ -140,7 +140,6 @@ function createNewTasks(evnt) {
         clearForm();
         sendTaskInLocalDB(tasksList);
         drawTask(taskName, taskId);
-        location.reload();
     }
 }
 function clearForm() {
@@ -150,7 +149,16 @@ function clearForm() {
 function sendTaskInLocalDB(tasksList) {
     var serialTasksList = JSON.stringify(tasksList);
     localStorage.setItem("tasksDB", serialTasksList);
+    location.reload();
 }
+var deleteTask = function deleteTask(id) {
+    tasksList.map(function (el, index, array) {
+        if (array[index].id == id) {
+            array.splice(index, 1);
+        }
+        sendTaskInLocalDB(array);
+    });
+};
 
 function drawTask(name, id) {
     var newTask = doc.createElement('div');
@@ -194,17 +202,6 @@ function drawTask(name, id) {
     taskButtonWrap.appendChild(taskButtonDeleteItem);
 }
 
-var deleteTask = function deleteTask(id) {
-    tasksList.map(function (el, index, array) {
-        if (array[index].id == id) {
-            array.splice(index, 1);
-            console.log(array);
-        }
-        var serialTaskList = JSON.stringify(tasksList);
-        localStorage.setItem("tasksDB", serialTaskList);
-        location.reload();
-    });
-};
 doc.addEventListener('DOMContentLoaded', init);
 
 /***/ }),

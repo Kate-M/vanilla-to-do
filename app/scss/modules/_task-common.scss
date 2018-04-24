@@ -63,31 +63,31 @@ main {
     margin-left: 10px;
 }
 .btn-status {
-    @include button-color(#EEC780);
+    @include button-color(#FAC174);
     &::after {
         content: '\e905';
     }
 }
 .btn-edit {
-    @include button-color(#7BBEC3);
+    @include button-color(#27A4DE);
     &::after {
         content: '\e903';
     }
 }
 .btn-delete-item {
-    @include button-color(#E27069);
+    @include button-color(#F1646C);
     &::after {
         content: '\e904';
     }
 }
 .btn-save {
-    @include button-color(#5ACBA5);
+    @include button-color(#9ED5C0);
     &::after {
         content: '\e902';
     }    
 }
 .btn-cancel {
-    @include button-color(#7BBEC3);
+    @include button-color(#27A4DE);
     &::after {
         content: '\e901';
     }
