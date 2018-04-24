@@ -11,16 +11,32 @@ let status = {
 };
 
 function init() {
-    doc.getElementById('add-task').addEventListener('click', createNewTasks);
-    
-    if (typeof(Storage) !== "undefined") {
+    if (typeof (Storage) !== "undefined") {
         if (localStorage.getItem('tasksDB')) {
             tasksList = JSON.parse(localStorage.getItem("tasksDB"));
-            tasksList.forEach(el => drawTask(el.name));
+            tasksList.forEach(el => drawTask(el.name, el.id));
         }
     } else {
         console.log('Sorry! No Web Storage support');
     }
+
+    doc.getElementById('add-task').addEventListener('click', createNewTasks);
+    doc.querySelectorAll('.task-form').forEach(
+        el => el.onclick = function (evnt) {
+            evnt.preventDefault();
+            var targetForm = evnt.target.closest('form');
+            var targetButton = evnt.target.getAttribute('data-state');
+            var targetTaskId = targetForm.querySelector('.name-field').getAttribute('data-id');
+
+            switch (targetButton) {
+                case 'delete-task':
+                    deleteTask(targetTaskId);
+                    break;
+                default:
+                    console.log('other');
+            }
+        }
+    );
 }
 
 function createNewTasks(evnt) {
@@ -36,10 +52,12 @@ function createNewTasks(evnt) {
             taskItem.id = 0;
         }
         taskItem.name = taskName;
+        let taskId = taskItem.id;
         tasksList.push(taskItem);
         clearForm();
         sendTaskInLocalDB(tasksList);
-        drawTask(taskName);
+        drawTask(taskName, taskId);
+        location.reload();
     }
 }
 function clearForm() {
@@ -51,7 +69,7 @@ function sendTaskInLocalDB(tasksList) {
     localStorage.setItem("tasksDB", serialTasksList);
 }
 
-function drawTask(taskName) {
+function drawTask(name, id) {
     let newTask = doc.createElement('div');
     newTask.setAttribute('class', 'tasks-wrap');
     taskArea.insertBefore(newTask, taskArea.firstChild);
@@ -71,8 +89,9 @@ function drawTask(taskName) {
 
     let taskText = doc.createElement('p');
     taskText.setAttribute('class', 'field name-field');
+    taskText.setAttribute('data-id', `${id}`);
     taskFieldset.appendChild(taskText);
-    taskText.innerHTML = taskName;
+    taskText.innerHTML = name;
 
     let taskButtonWrap = doc.createElement('div');
     taskButtonWrap.setAttribute('class', 'btn-group');
@@ -88,7 +107,19 @@ function drawTask(taskName) {
 
     let taskButtonDeleteItem = doc.createElement('button');
     taskButtonDeleteItem.setAttribute('class', 'btn btn-sm btn-delete-item');
+    taskButtonDeleteItem.setAttribute('data-state', 'delete-task');
     taskButtonWrap.appendChild(taskButtonDeleteItem);
 }
 
+var deleteTask = function (id) {
+    tasksList.map((el, index, array) => {
+        if (array[index].id == id) {
+            array.splice(index, 1);
+            console.log(array);
+        }
+        let serialTaskList = JSON.stringify(tasksList);
+        localStorage.setItem("tasksDB", serialTaskList);
+        location.reload();
+    })
+}
 doc.addEventListener('DOMContentLoaded', init);
