@@ -104,16 +104,23 @@ function init() {
     }
 
     doc.getElementById('add-task').addEventListener('click', createNewTasks);
-    doc.querySelectorAll('.task-form').forEach(function (el) {
+    doc.querySelectorAll('.tasks-wrap').forEach(function (el) {
         return el.onclick = function (evnt) {
             evnt.preventDefault();
             var targetForm = evnt.target.closest('form');
             var targetButton = evnt.target.getAttribute('data-state');
             var targetTaskId = targetForm.querySelector('.name-field').getAttribute('data-id');
+            var targetTaskName = targetForm.querySelector('.name-field').innerHTML;
 
             switch (targetButton) {
                 case 'delete-task':
                     deleteTask(targetTaskId);
+                    break;
+                case 'edit-task':
+                    editTask(targetForm, targetTaskName, targetTaskId);
+                    break;
+                case 'cancel-task':
+                    cancelTask(targetForm);
                     break;
                 default:
                     console.log('other');
@@ -142,15 +149,6 @@ function createNewTasks(evnt) {
         drawTask(taskName, taskId);
     }
 }
-function clearForm() {
-    doc.querySelector('.add-field').value = '';
-}
-
-function sendTaskInLocalDB(tasksList) {
-    var serialTasksList = JSON.stringify(tasksList);
-    localStorage.setItem("tasksDB", serialTasksList);
-    location.reload();
-}
 var deleteTask = function deleteTask(id) {
     tasksList.map(function (el, index, array) {
         if (array[index].id == id) {
@@ -158,6 +156,17 @@ var deleteTask = function deleteTask(id) {
         }
         sendTaskInLocalDB(array);
     });
+};
+
+var editTask = function editTask(form, name, id) {
+    var containerTask = form.parentNode;
+    containerTask.classList.add('edit-mode');
+    drawEditMode(containerTask, name, id);
+};
+
+var cancelTask = function cancelTask(form) {
+    form.parentNode.classList.remove('edit-mode');
+    form.remove();
 };
 
 function drawTask(name, id) {
@@ -194,12 +203,54 @@ function drawTask(name, id) {
 
     var taskButtonEdit = doc.createElement('button');
     taskButtonEdit.setAttribute('class', 'btn btn-sm btn-edit');
+    taskButtonEdit.setAttribute('data-state', 'edit-task');
     taskButtonWrap.appendChild(taskButtonEdit);
 
     var taskButtonDeleteItem = doc.createElement('button');
     taskButtonDeleteItem.setAttribute('class', 'btn btn-sm btn-delete-item');
     taskButtonDeleteItem.setAttribute('data-state', 'delete-task');
     taskButtonWrap.appendChild(taskButtonDeleteItem);
+}
+function drawEditMode(container, name, id) {
+
+    var taskForm = doc.createElement('form');
+    taskForm.setAttribute('class', 'form task-form task-editable');
+    container.appendChild(taskForm);
+
+    var taskFieldset = doc.createElement('fieldset');
+    taskFieldset.setAttribute('class', 'field-wrap');
+    taskForm.appendChild(taskFieldset);
+
+    var taskInput = doc.createElement('input');
+    taskInput.setAttribute('class', 'field name-field');
+    taskInput.setAttribute('type', 'text');
+    taskInput.setAttribute('data-id', "" + id);
+    taskFieldset.appendChild(taskInput);
+    taskInput.value = name;
+
+    var taskButtonWrap = doc.createElement('div');
+    taskButtonWrap.setAttribute('class', 'btn-group');
+    taskForm.appendChild(taskButtonWrap);
+
+    var taskButtonSave = doc.createElement('button');
+    taskButtonSave.setAttribute('class', 'btn btn-sm btn-save');
+    taskButtonSave.setAttribute('data-state', 'save-task');
+    taskButtonWrap.appendChild(taskButtonSave);
+
+    var taskButtonCancel = doc.createElement('button');
+    taskButtonCancel.setAttribute('class', 'btn btn-sm btn-cancel');
+    taskButtonCancel.setAttribute('data-state', 'cancel-task');
+    taskButtonWrap.appendChild(taskButtonCancel);
+}
+
+function clearForm() {
+    doc.querySelector('.add-field').value = '';
+}
+
+function sendTaskInLocalDB(tasksList) {
+    var serialTasksList = JSON.stringify(tasksList);
+    localStorage.setItem("tasksDB", serialTasksList);
+    location.reload();
 }
 
 doc.addEventListener('DOMContentLoaded', init);

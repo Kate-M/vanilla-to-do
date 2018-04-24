@@ -21,16 +21,23 @@ function init() {
     }
 
     doc.getElementById('add-task').addEventListener('click', createNewTasks);
-    doc.querySelectorAll('.task-form').forEach(
+    doc.querySelectorAll('.tasks-wrap').forEach(
         el => el.onclick = function (evnt) {
             evnt.preventDefault();
-            var targetForm = evnt.target.closest('form');
-            var targetButton = evnt.target.getAttribute('data-state');
-            var targetTaskId = targetForm.querySelector('.name-field').getAttribute('data-id');
+            let targetForm = evnt.target.closest('form');
+            let targetButton = evnt.target.getAttribute('data-state');
+            let targetTaskId = targetForm.querySelector('.name-field').getAttribute('data-id');
+            let targetTaskName = targetForm.querySelector('.name-field').innerHTML;
 
             switch (targetButton) {
                 case 'delete-task':
                     deleteTask(targetTaskId);
+                    break;
+                case 'edit-task':
+                    editTask(targetForm, targetTaskName, targetTaskId);
+                    break;
+                case 'cancel-task':
+                    cancelTask(targetForm);
                     break;
                 default:
                     console.log('other');
@@ -59,23 +66,25 @@ function createNewTasks(evnt) {
         drawTask(taskName, taskId);
     }
 }
-function clearForm() {
-    doc.querySelector('.add-field').value = '';
-}
-
-function sendTaskInLocalDB(tasksList) {
-    let serialTasksList = JSON.stringify(tasksList);
-    localStorage.setItem("tasksDB", serialTasksList);
-    location.reload();
-}
-var deleteTask = function (id) {
+let deleteTask = function (id) {
     tasksList.map((el, index, array) => {
         if (array[index].id == id) {
             array.splice(index, 1);
         }
         sendTaskInLocalDB(array);
     })
-}
+};
+
+let editTask = function (form, name, id) {
+    let containerTask = form.parentNode;
+    containerTask.classList.add('edit-mode');
+    drawEditMode(containerTask, name, id);
+};
+
+let cancelTask = function (form) {
+    form.parentNode.classList.remove('edit-mode');
+    form.remove();
+};
 
 function drawTask(name, id) {
     let newTask = doc.createElement('div');
@@ -111,12 +120,54 @@ function drawTask(name, id) {
 
     let taskButtonEdit = doc.createElement('button');
     taskButtonEdit.setAttribute('class', 'btn btn-sm btn-edit');
+    taskButtonEdit.setAttribute('data-state', 'edit-task');
     taskButtonWrap.appendChild(taskButtonEdit);
 
     let taskButtonDeleteItem = doc.createElement('button');
     taskButtonDeleteItem.setAttribute('class', 'btn btn-sm btn-delete-item');
     taskButtonDeleteItem.setAttribute('data-state', 'delete-task');
     taskButtonWrap.appendChild(taskButtonDeleteItem);
+}
+function drawEditMode(container, name, id) {
+
+    let taskForm = doc.createElement('form');
+    taskForm.setAttribute('class', 'form task-form task-editable');
+    container.appendChild(taskForm);
+
+    let taskFieldset = doc.createElement('fieldset');
+    taskFieldset.setAttribute('class', 'field-wrap');
+    taskForm.appendChild(taskFieldset);
+
+    let taskInput = doc.createElement('input');
+    taskInput.setAttribute('class', 'field name-field');
+    taskInput.setAttribute('type', 'text');
+    taskInput.setAttribute('data-id', `${id}`);
+    taskFieldset.appendChild(taskInput);
+    taskInput.value = name;
+
+    let taskButtonWrap = doc.createElement('div');
+    taskButtonWrap.setAttribute('class', 'btn-group');
+    taskForm.appendChild(taskButtonWrap);
+
+    let taskButtonSave = doc.createElement('button');
+    taskButtonSave.setAttribute('class', 'btn btn-sm btn-save');
+    taskButtonSave.setAttribute('data-state', 'save-task');
+    taskButtonWrap.appendChild(taskButtonSave);
+
+    let taskButtonCancel = doc.createElement('button');
+    taskButtonCancel.setAttribute('class', 'btn btn-sm btn-cancel');
+    taskButtonCancel.setAttribute('data-state', 'cancel-task');
+    taskButtonWrap.appendChild(taskButtonCancel);
+}
+
+function clearForm() {
+    doc.querySelector('.add-field').value = '';
+}
+
+function sendTaskInLocalDB(tasksList) {
+    let serialTasksList = JSON.stringify(tasksList);
+    localStorage.setItem("tasksDB", serialTasksList);
+    location.reload();
 }
 
 doc.addEventListener('DOMContentLoaded', init);

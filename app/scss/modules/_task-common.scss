@@ -90,6 +90,10 @@ main {
     @include button-color(#27A4DE);
     &::after {
         content: '\e901';
+        font: {
+            size: 1.2rem;
+            weight: bold;
+        }
     }
 }
 .not-progress .btn-status {

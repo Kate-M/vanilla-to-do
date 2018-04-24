@@ -56,4 +56,16 @@
 }
 .task-editable {
     display: none;
+    .field-wrap,
+    .field {
+        width: 100%;
+    }
+}
+.edit-mode {
+    .task-normal {
+        display: none;
+    }
+    .task-editable {
+        display: flex;
+    }
 }
