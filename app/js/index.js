@@ -4,43 +4,54 @@ const doc = document;
 let taskArea = doc.querySelector(".tasks-container");
 let tasksList = [];
 
+let status = {
+    default: 0,
+    processing: 1,
+    completed: 2
+};
+
 function init() {
     doc.getElementById('add-task').addEventListener('click', createNewTasks);
-    if (localStorage.getItem('tasksBD')) {
-        tasksList = JSON.parse(localStorage.getItem("tasksBD"));
-        tasksList.forEach(function (el, index, arr) {
-            drowNewTasks(el.name);
-        });
+    
+    if (typeof(Storage) !== "undefined") {
+        if (localStorage.getItem('tasksDB')) {
+            tasksList = JSON.parse(localStorage.getItem("tasksDB"));
+            tasksList.forEach(el => drawTask(el.name));
+        }
+    } else {
+        console.log('Sorry! No Web Storage support');
     }
 }
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
     let taskItem = {
-        status: 0
+        status: status.default
     };
-    let taksName = doc.querySelector('.add-field').value;
-    if (taksName) {
+    let taskName = doc.querySelector('.add-field').value;
+    if (taskName) {
         if (tasksList.length != 0) {
             taskItem.id = tasksList[tasksList.length - 1].id + 1;
         } else {
             taskItem.id = 0;
         }
-        taskItem.id = 0;
-        taskItem.name = taksName;
+        taskItem.name = taskName;
         tasksList.push(taskItem);
-        doc.querySelector('.add-field').value = '';
-        sendTaskInLocalBD(tasksList);
-        drowNewTasks(taksName);
+        clearForm();
+        sendTaskInLocalDB(tasksList);
+        drawTask(taskName);
     }
 }
-
-function sendTaskInLocalBD(tasksList) {
-    let serialTasksList = JSON.stringify(tasksList);
-    localStorage.setItem("tasksBD", serialTasksList);
+function clearForm() {
+    doc.querySelector('.add-field').value = '';
 }
 
-function drowNewTasks(taksName) {
+function sendTaskInLocalDB(tasksList) {
+    let serialTasksList = JSON.stringify(tasksList);
+    localStorage.setItem("tasksDB", serialTasksList);
+}
+
+function drawTask(taskName) {
     let newTask = doc.createElement('div');
     newTask.setAttribute('class', 'tasks-wrap');
     taskArea.insertBefore(newTask, taskArea.firstChild);
@@ -61,15 +72,15 @@ function drowNewTasks(taksName) {
     let taskText = doc.createElement('p');
     taskText.setAttribute('class', 'field name-field');
     taskFieldset.appendChild(taskText);
-    taskText.innerHTML = taksName;
+    taskText.innerHTML = taskName;
 
     let taskButtonWrap = doc.createElement('div');
     taskButtonWrap.setAttribute('class', 'btn-group');
     taskForm.appendChild(taskButtonWrap);
 
-    let taskButtonSatus = doc.createElement('button');
-    taskButtonSatus.setAttribute('class', 'btn btn-sm btn-status');
-    taskButtonWrap.appendChild(taskButtonSatus);
+    let taskButtonStatus = doc.createElement('button');
+    taskButtonStatus.setAttribute('class', 'btn btn-sm btn-status');
+    taskButtonWrap.appendChild(taskButtonStatus);
 
     let taskButtonEdit = doc.createElement('button');
     taskButtonEdit.setAttribute('class', 'btn btn-sm btn-edit');

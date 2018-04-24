@@ -15,28 +15,26 @@ main {
 }
 .field {
     padding: 0 5px;
-    height: 35px;
+    height: 60px;
     border-radius: 3px;
     border: 1px solid #E7E7E7;
 }
 .btn {
-    display: flex;
-    justify-content: center;
+    @include center-all;
     position: relative;
-    align-items: center;
     &::after {
+        @include center-all;
         content: '';
-        font-family: $font_ico;
         position: absolute;
         height: 100%;
         width: 100%;
         top:0;
         left: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         color:$color_white;
-        font-size: 1.8rem;
+        font: {
+            size: 1.8rem;
+            family: $font_ico;
+        }
     }
 }
 .btn-md,
@@ -44,15 +42,19 @@ main {
     height: 35px;
     width: 35px;
     background: #736477;
-    border-radius: 3px;
     color:$color_white;
     &:hover {
         background: darken(#736477, 10%)
     }
 }
+.btn-md {
+    border-radius: 0 3px 3px 0;
+}
+.btn-lg {
+    border-radius: 3px;
+}
 .btn-group {
-    display: flex;
-    align-items: center;
+    @include center-x;
 } 
 .btn-sm {
     width: 30px;
@@ -61,42 +63,33 @@ main {
     margin-left: 10px;
 }
 .btn-status {
-    background: #EEC780;
-    &:hover {
-        background: darken(#EEC780, 10%)
-    }
+    @include button-color(#EEC780);
     &::after {
         content: '\e905';
     }
 }
 .btn-edit {
-    background: #7BBEC3;
-    &:hover {
-        background: darken(#7BBEC3, 10%)
-    }
+    @include button-color(#7BBEC3);
     &::after {
         content: '\e903';
     }
 }
 .btn-delete-item {
-    background: #E27069;
-    &:hover {
-        background: darken(#E27069, 10%)
-    }
+    @include button-color(#E27069);
     &::after {
         content: '\e904';
     }
 }
 .btn-save {
-    background: #5ACBA5;
-    &:hover {
-        background: darken(#5ACBA5, 10%)
-        }
+    @include button-color(#5ACBA5);
+    &::after {
+        content: '\e902';
+    }    
 }
 .btn-cancel {
-    background: #7BBEC3;
-    &:hover {
-        background: darken(#7BBEC3, 10%)
+    @include button-color(#7BBEC3);
+    &::after {
+        content: '\e901';
     }
 }
 .not-progress .btn-status {
