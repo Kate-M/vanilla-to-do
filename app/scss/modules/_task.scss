@@ -24,11 +24,11 @@
         vertical-align: middle;
         cursor: pointer;
         &:checked {
-            border: 1px solid #5ACBA5;
+            border: 1px solid #9ED5C0;
             &:after {
                 content: '\e909';
                 display: block;
-                color:#5ACBA5;
+                color:#9ED5C0;
                 position: absolute;
                 top: 0;
                 left:0;
@@ -56,4 +56,16 @@
 }
 .task-editable {
     display: none;
+    .field-wrap,
+    .field {
+        width: 100%;
+    }
+}
+.edit-mode {
+    .task-normal {
+        display: none;
+    }
+    .task-editable {
+        display: flex;
+    }
 }
