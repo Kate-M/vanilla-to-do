@@ -84,15 +84,15 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-var taskArea = document.querySelector(".tasks-container");
-var status = {
+var TASK_AREA = document.querySelector(".tasks-container");
+var STATUS = {
     default: 0,
     processing: 1,
     completed: 2
 };
 
-exports.taskArea = taskArea;
-exports.status = status;
+exports.TASK_AREA = TASK_AREA;
+exports.STATUS = STATUS;
 
 /***/ }),
 
@@ -166,7 +166,7 @@ var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 function drawTask(name, id) {
     var newTask = document.createElement('div');
     newTask.setAttribute('class', 'tasks-wrap');
-    _constant.taskArea.insertBefore(newTask, _constant.taskArea.firstChild);
+    _constant.TASK_AREA.insertBefore(newTask, _constant.TASK_AREA.firstChild);
 
     newTask.innerHTML = '<form action="smth" class="form task-form not-progress">\n            <fieldset class="field-wrap">\n                <input type="checkbox" class="status-btn">\n                <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>';
 }
@@ -249,7 +249,7 @@ var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
 function createNewTasks(evnt) {
     evnt.preventDefault();
     var taskItem = {
-        status: _constant.status.default
+        STATUS: _constant.STATUS.default
     };
     var taskName = document.querySelector('.add-field').value.trim();
     if (!taskName) {

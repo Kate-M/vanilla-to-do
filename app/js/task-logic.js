@@ -1,11 +1,11 @@
-import { status } from './constant';
+import { STATUS } from './constant';
 import { tasksList, sendTaskInLocalDB } from './index';
 import { drawTask } from './dom';
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
     let taskItem = {
-        status: status.default
+        STATUS: STATUS.default
     };
     let taskName = document.querySelector('.add-field').value.trim();
     if (!taskName ) {

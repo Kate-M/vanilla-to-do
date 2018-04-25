@@ -1,9 +1,9 @@
-import { taskArea } from './constant';
+import { TASK_AREA } from './constant';
 
 function drawTask(name, id) {
     let newTask = document.createElement('div');
     newTask.setAttribute('class', 'tasks-wrap');
-    taskArea.insertBefore(newTask, taskArea.firstChild);
+    TASK_AREA.insertBefore(newTask, TASK_AREA.firstChild);
 
     newTask.innerHTML =
         `<form action="smth" class="form task-form not-progress">
