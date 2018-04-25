@@ -12,7 +12,7 @@
         margin-bottom: 10px;
     }
 }
-.status-btn {
+.btn-status-complete {
     width: 13px;
     height: 13px;
     border: 1px solid #E7E7E7;
@@ -22,7 +22,7 @@
     display: inline-block;
     vertical-align: middle;
     cursor: pointer;
-    &:checked {
+    &[checked="true"] {
         border: 1px solid #9ED5C0;
         &:after {
             content: '\e909';
@@ -64,7 +64,7 @@
     .edit-name-field, .btn-save, .btn-cancel {
         display: flex;
     }
-    .status-btn, .name-field,.btn-status, .btn-edit, .btn-delete-item {
+    .status-btn, .name-field,.btn-status, .btn-edit, .btn-delete-item, .btn-status-complete {
         display: none;
     }
 }

@@ -1,8 +1,8 @@
-import { createNewTasks, deleteTask, editTask, saveTask, cancelTask } from './task-logic'
+import { STATUS } from './constant';
+import { createNewTasks, deleteTask, editTask, saveTask, cancelTask, changeStatus } from './task-logic'
 
 export function startEvents() {
     document.getElementById('add-task').addEventListener('click', createNewTasks);
-
     document.querySelectorAll('.tasks-wrap').forEach(
         el => el.onclick = function (evnt) {
             evnt.preventDefault();
@@ -24,6 +24,12 @@ export function startEvents() {
                 case 'save-task':
                     saveTask(targetForm, targetTaskId);
                     break;
+                case 'status-task':
+                    changeStatus(targetTaskId, STATUS.processing);
+                    break;
+                case 'status-complete-task':
+                    changeStatus(targetTaskId, STATUS.completed);
+                    break;       
                 default:
                     console.log('other');
             }
