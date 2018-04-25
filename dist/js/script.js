@@ -159,7 +159,7 @@ function startEvents() {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.drawEditMode = exports.drawTask = undefined;
+exports.drawTask = undefined;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
@@ -168,16 +168,10 @@ function drawTask(name, id) {
     newTask.setAttribute('class', 'tasks-wrap');
     _constant.taskArea.insertBefore(newTask, _constant.taskArea.firstChild);
 
-    newTask.innerHTML = '<form action="smth" class="form task-form task-normal not-progress">\n            <fieldset class="field-wrap">\n                <input type="checkbox" class="status-cntrl">\n                <p class="field name-field" data-id="' + id + '">' + name + '</p>\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n            </div>\n        </form>';
-}
-
-function drawEditMode(container, name, id) {
-
-    container.innerHTML = '<form action="smth" class="form task-form task-editable">\n            <fieldset class="field-wrap">\n                <input type="text" class="field name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>';
+    newTask.innerHTML = '<form action="smth" class="form task-form not-progress">\n            <fieldset class="field-wrap">\n                <input type="checkbox" class="status-btn">\n                <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>';
 }
 
 exports.drawTask = drawTask;
-exports.drawEditMode = drawEditMode;
 
 /***/ }),
 
@@ -257,13 +251,11 @@ function createNewTasks(evnt) {
     var taskItem = {
         status: _constant.status.default
     };
-    var taskName = document.querySelector('.add-field').value;
-    if (taskName) {
-        if (_index.tasksList.length != 0) {
-            taskItem.id = _index.tasksList[_index.tasksList.length - 1].id + 1;
-        } else {
-            taskItem.id = 0;
-        }
+    var taskName = document.querySelector('.add-field').value.trim();
+    if (!taskName) {
+        document.querySelector('.add-task .error').innerHTML = "Invalid value";
+    } else {
+        taskItem.id = new Date().valueOf() + '_' + taskName;
         taskItem.name = taskName;
         var taskId = taskItem.id;
         _index.tasksList.push(taskItem);
@@ -272,23 +264,19 @@ function createNewTasks(evnt) {
         (0, _dom.drawTask)(taskName, taskId);
     }
 }
-var deleteTask = function deleteTask(id) {
-    _index.tasksList.map(function (el, index, array) {
-        if (array[index].id == id) {
-            array.splice(index, 1);
-        }
-        (0, _index.sendTaskInLocalDB)(array);
+function deleteTask(id) {
+    var list = _index.tasksList.filter(function (el, index, arr) {
+        return arr[index].id != id;
     });
+    (0, _index.sendTaskInLocalDB)(list);
 };
 
-var editTask = function editTask(form, name, id) {
-    var containerTask = form.parentNode;
-    containerTask.classList.add('edit-mode');
-    (0, _dom.drawEditMode)(containerTask, name, id);
+function editTask(form, name, id) {
+    form.classList.add('edit-mode');
 };
 
-var saveTask = function saveTask(form, id) {
-    var newTaskName = form.querySelector('.name-field').value.trim();
+function saveTask(form, id) {
+    var newTaskName = form.querySelector('.edit-name-field').value.trim();
     _index.tasksList.map(function (el, index, array) {
         if (array[index].id == id && newTaskName != '') {
             array[index].name = newTaskName;
@@ -297,9 +285,9 @@ var saveTask = function saveTask(form, id) {
     });
 };
 
-var cancelTask = function cancelTask(form) {
-    form.parentNode.classList.remove('edit-mode');
-    form.remove();
+function cancelTask(form) {
+    form.classList.remove('edit-mode');
+    console.log(form);
 };
 
 exports.createNewTasks = createNewTasks;
