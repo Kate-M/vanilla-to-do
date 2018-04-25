@@ -82,12 +82,14 @@ main {
 }
 .btn-save {
     @include button-color(#9ED5C0);
+    display: none;
     &::after {
         content: '\e902';
     }    
 }
 .btn-cancel {
     @include button-color(#27A4DE);
+    display: none;
     &::after {
         content: '\e901';
         font: {

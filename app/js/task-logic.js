@@ -1,19 +1,17 @@
-import { status } from './constant';
+import { STATUS } from './constant';
 import { tasksList, sendTaskInLocalDB } from './index';
-import { drawTask, drawEditMode } from './dom';
+import { drawTask } from './dom';
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
     let taskItem = {
-        status: status.default
+        STATUS: STATUS.default
     };
-    let taskName = document.querySelector('.add-field').value;
-    if (taskName) {
-        if (tasksList.length != 0) {
-            taskItem.id = tasksList[tasksList.length - 1].id + 1;
-        } else {
-            taskItem.id = 0;
-        }
+    let taskName = document.querySelector('.add-field').value.trim();
+    if (!taskName ) {
+        document.querySelector('.add-task .error').innerHTML = "Invalid value";
+    } else {
+        taskItem.id = new Date().valueOf()  + '_' + taskName;
         taskItem.name = taskName;
         let taskId = taskItem.id;
         tasksList.push(taskItem);
@@ -22,23 +20,17 @@ function createNewTasks(evnt) {
         drawTask(taskName, taskId);
     }
 }
-let deleteTask = function (id) {
-    tasksList.map((el, index, array) => {
-        if (array[index].id == id) {
-            array.splice(index, 1);
-        }
-        sendTaskInLocalDB(array);
-    })
+function deleteTask (id) {
+    let list = tasksList.filter((el, index, arr) => arr[index].id != id);
+    sendTaskInLocalDB(list);
 };
 
-let editTask = function (form, name, id) {
-    let containerTask = form.parentNode;
-    containerTask.classList.add('edit-mode');
-    drawEditMode(containerTask, name, id);
+function editTask (form, name, id) {
+    form.classList.add('edit-mode');
 };
 
-let saveTask = function (form, id) {
-    let newTaskName = form.querySelector('.name-field').value.trim();
+function saveTask (form, id) {
+    let newTaskName = form.querySelector('.edit-name-field').value.trim();
     tasksList.map((el, index, array) => {
         if (array[index].id == id && newTaskName != '') {
             array[index].name = newTaskName;
@@ -47,9 +39,9 @@ let saveTask = function (form, id) {
     })
 };
 
-let cancelTask = function (form) {
-    form.parentNode.classList.remove('edit-mode');
-    form.remove();
+function cancelTask (form) {
+    form.classList.remove('edit-mode');
+    console.log(form);
 };
 
 export { createNewTasks, deleteTask, editTask, saveTask, cancelTask };
