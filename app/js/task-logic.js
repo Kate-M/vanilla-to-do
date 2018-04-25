@@ -4,20 +4,21 @@ import { drawTask } from './dom';
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
-    let taskItem = {
-        STATUS: STATUS.default
-    };
+
     let taskName = document.querySelector('.add-field').value.trim();
-    if (!taskName ) {
+    
+    if (!taskName) {
         document.querySelector('.add-task .error').innerHTML = "Invalid value";
     } else {
-        taskItem.id = new Date().valueOf()  + '_' + taskName;
-        taskItem.name = taskName;
-        let taskId = taskItem.id;
-        tasksList.push(taskItem);
+        let taskId = new Date().valueOf()  + '_' + taskName;
+        tasksList.push({
+            status: STATUS.default,
+            id: taskId,
+            name: taskName
+        });
         document.querySelector('.add-field').value = '';
         sendTaskInLocalDB(tasksList);
-        drawTask(taskName, taskId);
+        drawTask(taskId, taskName, STATUS.default);
     }
 }
 function deleteTask (id) {
@@ -31,12 +32,11 @@ function editTask (form, name, id) {
 
 function saveTask (form, id) {
     let newTaskName = form.querySelector('.edit-name-field').value.trim();
-    tasksList.map((el, index, array) => {
-        if (array[index].id == id && newTaskName != '') {
-            array[index].name = newTaskName;
-        }
-        sendTaskInLocalDB(array);
-    })
+    let currentTask = tasksList.filter((el, index, array) => 
+        array[index].id == id && newTaskName != ''
+    )
+    currentTask[0].name = newTaskName;
+    sendTaskInLocalDB(tasksList);
 };
 
 function cancelTask (form) {
@@ -44,4 +44,20 @@ function cancelTask (form) {
     console.log(form);
 };
 
-export { createNewTasks, deleteTask, editTask, saveTask, cancelTask };
+function changeStatus(id, statusValue) {
+    let currentTask = selectTask(id);
+    if(currentTask[0].status == statusValue) {
+        currentTask[0].status = STATUS.default;
+    } else {
+        currentTask[0].status = statusValue;
+    }
+    sendTaskInLocalDB(tasksList);
+}
+
+function selectTask(id) {
+    return tasksList.filter((el, index, array) => 
+        array[index].id == id
+    )
+}
+
+export { createNewTasks, deleteTask, editTask, saveTask, cancelTask, changeStatus };

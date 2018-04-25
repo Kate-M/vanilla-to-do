@@ -111,11 +111,12 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.startEvents = startEvents;
 
+var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
+
 var _taskLogic = __webpack_require__(/*! ./task-logic */ "./app/js/task-logic.js");
 
 function startEvents() {
     document.getElementById('add-task').addEventListener('click', _taskLogic.createNewTasks);
-
     document.querySelectorAll('.tasks-wrap').forEach(function (el) {
         return el.onclick = function (evnt) {
             evnt.preventDefault();
@@ -136,6 +137,12 @@ function startEvents() {
                     break;
                 case 'save-task':
                     (0, _taskLogic.saveTask)(targetForm, targetTaskId);
+                    break;
+                case 'status-task':
+                    (0, _taskLogic.changeStatus)(targetTaskId, _constant.STATUS.processing);
+                    break;
+                case 'status-complete-task':
+                    (0, _taskLogic.changeStatus)(targetTaskId, _constant.STATUS.completed);
                     break;
                 default:
                     console.log('other');
@@ -163,12 +170,12 @@ exports.drawTask = undefined;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
-function drawTask(name, id) {
+function drawTask(id, name, status) {
     var newTask = document.createElement('div');
     newTask.setAttribute('class', 'tasks-wrap');
     _constant.TASK_AREA.insertBefore(newTask, _constant.TASK_AREA.firstChild);
 
-    newTask.innerHTML = '<form action="smth" class="form task-form not-progress">\n            <fieldset class="field-wrap">\n                <input type="checkbox" class="status-btn">\n                <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>';
+    newTask.innerHTML = '<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == 2) + '">\n                <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>';
 }
 
 exports.drawTask = drawTask;
@@ -191,8 +198,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.tasksList = undefined;
 exports.sendTaskInLocalDB = sendTaskInLocalDB;
 
-var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
-
 var _controller = __webpack_require__(/*! ./controller */ "./app/js/controller.js");
 
 var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
@@ -205,7 +210,7 @@ function init() {
         if (localStorage.getItem('tasksDB')) {
             exports.tasksList = tasksList = JSON.parse(localStorage.getItem("tasksDB"));
             tasksList.forEach(function (el) {
-                return (0, _dom.drawTask)(el.name, el.id);
+                return (0, _dom.drawTask)(el.id, el.name, el.status);
             });
         }
     } else {
@@ -215,7 +220,7 @@ function init() {
     (0, _controller.startEvents)();
 }
 
-function sendTaskInLocalDB(tasksList) {
+function sendTaskInLocalDB(tasksList, reload) {
     var serialTasksList = JSON.stringify(tasksList);
     localStorage.setItem("tasksDB", serialTasksList);
     location.reload();
@@ -238,7 +243,7 @@ document.addEventListener('DOMContentLoaded', init);
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.cancelTask = exports.saveTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
+exports.changeStatus = exports.cancelTask = exports.saveTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
@@ -248,20 +253,21 @@ var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
-    var taskItem = {
-        STATUS: _constant.STATUS.default
-    };
+
     var taskName = document.querySelector('.add-field').value.trim();
+
     if (!taskName) {
         document.querySelector('.add-task .error').innerHTML = "Invalid value";
     } else {
-        taskItem.id = new Date().valueOf() + '_' + taskName;
-        taskItem.name = taskName;
-        var taskId = taskItem.id;
-        _index.tasksList.push(taskItem);
+        var taskId = new Date().valueOf() + '_' + taskName;
+        _index.tasksList.push({
+            status: _constant.STATUS.default,
+            id: taskId,
+            name: taskName
+        });
         document.querySelector('.add-field').value = '';
         (0, _index.sendTaskInLocalDB)(_index.tasksList);
-        (0, _dom.drawTask)(taskName, taskId);
+        (0, _dom.drawTask)(taskId, taskName, _constant.STATUS.default);
     }
 }
 function deleteTask(id) {
@@ -277,12 +283,11 @@ function editTask(form, name, id) {
 
 function saveTask(form, id) {
     var newTaskName = form.querySelector('.edit-name-field').value.trim();
-    _index.tasksList.map(function (el, index, array) {
-        if (array[index].id == id && newTaskName != '') {
-            array[index].name = newTaskName;
-        }
-        (0, _index.sendTaskInLocalDB)(array);
+    var currentTask = _index.tasksList.filter(function (el, index, array) {
+        return array[index].id == id && newTaskName != '';
     });
+    currentTask[0].name = newTaskName;
+    (0, _index.sendTaskInLocalDB)(_index.tasksList);
 };
 
 function cancelTask(form) {
@@ -290,11 +295,28 @@ function cancelTask(form) {
     console.log(form);
 };
 
+function changeStatus(id, statusValue) {
+    var currentTask = selectTask(id);
+    if (currentTask[0].status == statusValue) {
+        currentTask[0].status = _constant.STATUS.default;
+    } else {
+        currentTask[0].status = statusValue;
+    }
+    (0, _index.sendTaskInLocalDB)(_index.tasksList);
+}
+
+function selectTask(id) {
+    return _index.tasksList.filter(function (el, index, array) {
+        return array[index].id == id;
+    });
+}
+
 exports.createNewTasks = createNewTasks;
 exports.deleteTask = deleteTask;
 exports.editTask = editTask;
 exports.saveTask = saveTask;
 exports.cancelTask = cancelTask;
+exports.changeStatus = changeStatus;
 
 /***/ }),
 
