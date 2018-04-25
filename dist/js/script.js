@@ -115,10 +115,12 @@ var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
 var _taskLogic = __webpack_require__(/*! ./task-logic */ "./app/js/task-logic.js");
 
+var filterContainer = document.querySelector('.filter-task');
+
 function startEvents() {
     document.getElementById('add-task').addEventListener('click', _taskLogic.createNewTasks);
     document.querySelectorAll('.tasks-wrap').forEach(function (el) {
-        return el.onclick = function (evnt) {
+        return el.querySelector('.form').onclick = function (evnt) {
             evnt.preventDefault();
             var targetForm = evnt.target.closest('form');
             var targetButton = evnt.target.getAttribute('data-state');
@@ -143,6 +145,27 @@ function startEvents() {
                     break;
                 case 'status-complete-task':
                     (0, _taskLogic.changeStatus)(targetTaskId, _constant.STATUS.completed);
+                    break;
+            }
+        };
+    });
+    document.querySelector('.filter-btn').onclick = function () {
+        filterContainer.classList.toggle('open');
+    };
+    document.querySelectorAll('.filter-item').forEach(function (el) {
+        return el.onclick = function (evnt) {
+            evnt.preventDefault();
+            filterContainer.classList.remove('open');
+            var targetFilter = evnt.target.getAttribute('data-filter');
+            switch (targetFilter) {
+                case 'filter-all':
+                    (0, _taskLogic.filterTask)();
+                    break;
+                case 'filter-in-progress':
+                    (0, _taskLogic.filterTask)(_constant.STATUS.processing);
+                    break;
+                case 'filter-complete':
+                    (0, _taskLogic.filterTask)(_constant.STATUS.completed);
                     break;
                 default:
                     console.log('other');
@@ -175,7 +198,7 @@ function drawTask(id, name, status) {
     newTask.setAttribute('class', 'tasks-wrap');
     _constant.TASK_AREA.insertBefore(newTask, _constant.TASK_AREA.firstChild);
 
-    newTask.innerHTML = '<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == 2) + '">\n                <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>';
+    newTask.innerHTML = '<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == _constant.STATUS.completed) + '">\n                <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>';
 }
 
 exports.drawTask = drawTask;
@@ -243,7 +266,7 @@ document.addEventListener('DOMContentLoaded', init);
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.changeStatus = exports.cancelTask = exports.saveTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
+exports.filterTask = exports.changeStatus = exports.cancelTask = exports.saveTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
@@ -292,7 +315,6 @@ function saveTask(form, id) {
 
 function cancelTask(form) {
     form.classList.remove('edit-mode');
-    console.log(form);
 };
 
 function changeStatus(id, statusValue) {
@@ -311,12 +333,29 @@ function selectTask(id) {
     });
 }
 
+function filterTask(filterParam) {
+    _constant.TASK_AREA.innerHTML = '';
+    if (!filterParam) {
+        _index.tasksList.forEach(function (el) {
+            return (0, _dom.drawTask)(el.id, el.name, el.status);
+        });
+    } else {
+        var filteredTasks = _index.tasksList.filter(function (el, index, array) {
+            return el.status == filterParam;
+        });
+        filteredTasks.forEach(function (el) {
+            return (0, _dom.drawTask)(el.id, el.name, el.status);
+        });
+    }
+}
+
 exports.createNewTasks = createNewTasks;
 exports.deleteTask = deleteTask;
 exports.editTask = editTask;
 exports.saveTask = saveTask;
 exports.cancelTask = cancelTask;
 exports.changeStatus = changeStatus;
+exports.filterTask = filterTask;
 
 /***/ }),
 

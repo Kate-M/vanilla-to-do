@@ -1,10 +1,20 @@
 import { STATUS } from './constant';
-import { createNewTasks, deleteTask, editTask, saveTask, cancelTask, changeStatus } from './task-logic'
+import {
+    createNewTasks,
+    deleteTask,
+    editTask,
+    saveTask,
+    cancelTask,
+    changeStatus,
+    filterTask
+} from './task-logic'
+
+let filterContainer = document.querySelector('.filter-task');
 
 export function startEvents() {
     document.getElementById('add-task').addEventListener('click', createNewTasks);
     document.querySelectorAll('.tasks-wrap').forEach(
-        el => el.onclick = function (evnt) {
+        el => el.querySelector('.form').onclick = function (evnt) {
             evnt.preventDefault();
             let targetForm = evnt.target.closest('form');
             let targetButton = evnt.target.getAttribute('data-state');
@@ -29,10 +39,32 @@ export function startEvents() {
                     break;
                 case 'status-complete-task':
                     changeStatus(targetTaskId, STATUS.completed);
-                    break;       
+                    break;
+            }
+        }
+    );
+    document.querySelector('.filter-btn').onclick = function () {
+        filterContainer.classList.toggle('open');
+    }
+    document.querySelectorAll('.filter-item').forEach(
+        el => el.onclick = function (evnt) {
+            evnt.preventDefault();
+            filterContainer.classList.remove('open');
+            let targetFilter = evnt.target.getAttribute('data-filter');
+            switch (targetFilter) {
+                case 'filter-all':
+                    filterTask();
+                    break;
+                case 'filter-in-progress':
+                    filterTask(STATUS.processing);
+                    break;
+                case 'filter-complete':
+                    filterTask(STATUS.completed);
+                    break;
                 default:
                     console.log('other');
             }
         }
     );
+
 }

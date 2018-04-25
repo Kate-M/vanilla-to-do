@@ -38,15 +38,17 @@
         color:#F1646C;
     }
 }
+.filter-task.open {
+    .filter-select{
+        display: block;
+    }
+}
 .filter-task {
     cursor: pointer;
     min-width: 215px;
     text-transform: uppercase;
     position: relative;
     border-radius: 3px;
-    &:hover .filter-select{
-        display: block;
-    }
     .filter-btn {
         @include center-x;
         position: relative;
