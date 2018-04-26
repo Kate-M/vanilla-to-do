@@ -9,7 +9,9 @@ import {
     changeStatus,
     filterTask,
     searchTask,
-    resetSearchTask
+    resetSearchTask,
+    removeCompletedTasks,
+    removeAllTasks
 } from './task-logic'
 
 let filterContainer = document.querySelector('.filter-task');
@@ -78,6 +80,9 @@ export function startEvents() {
     );
     document.getElementById('search-btn').addEventListener('click', searchTask);
     document.getElementById('reset-search-btn').addEventListener('click', resetSearchTask);
+    document.getElementById('btn-remove-completed').addEventListener('click', removeCompletedTasks);
+    document.getElementById('btn-remove-all').addEventListener('click', removeAllTasks);
+
 }
 
 document.addEventListener('DOMContentLoaded', taskManager.init());

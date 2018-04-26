@@ -31,7 +31,9 @@ function createNewTasks(evnt) {
     }
 }
 function deleteTask(id, container) {
-    container.parentNode.removeChild(container);
+    if(container){
+        container.parentNode.removeChild(container);
+    }
     taskManager.delete(id);
 };
 
@@ -119,6 +121,26 @@ function resetSearchTask(evnt) {
     filterTask(filterMode);
     resetSearchButton.classList.remove('open');
 }
+function removeCompletedTasks(evnt) {
+    evnt.preventDefault();
+    let removetList = taskManager.tasksList.filter(el => el.status == STATUS.completed);
+    let checkTasks = document.querySelectorAll('.btn-status-complete');
+    checkTasks.forEach(el =>  
+        { 
+        if(el.getAttribute('checked') == 'true') {
+            let removerForm = el.closest('form');
+            removerForm.parentNode.removeChild(removerForm);
+        }
+        }
+    ); 
+
+    removetList.forEach(el =>  deleteTask(el.id)); 
+}
+function removeAllTasks(evnt) {
+    evnt.preventDefault();
+    TASK_AREA.innerHTML = '';
+    taskManager.tasksList.forEach(el =>  deleteTask(el.id)); 
+}
 function clearFilter() {
     filterTask();
     filterButton.innerHTML = "All";
@@ -136,5 +158,7 @@ export {
     changeStatus,
     filterTask,
     searchTask,
-    resetSearchTask
+    resetSearchTask,
+    removeCompletedTasks,
+    removeAllTasks
 };

@@ -298,6 +298,8 @@ function startEvents() {
     });
     document.getElementById('search-btn').addEventListener('click', _taskLogic.searchTask);
     document.getElementById('reset-search-btn').addEventListener('click', _taskLogic.resetSearchTask);
+    document.getElementById('btn-remove-completed').addEventListener('click', _taskLogic.removeCompletedTasks);
+    document.getElementById('btn-remove-all').addEventListener('click', _taskLogic.removeAllTasks);
 }
 
 document.addEventListener('DOMContentLoaded', _controller.taskManager.init());
@@ -317,7 +319,7 @@ document.addEventListener('DOMContentLoaded', _controller.taskManager.init());
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.resetSearchTask = exports.searchTask = exports.filterTask = exports.changeStatus = exports.cancelTask = exports.saveTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
+exports.removeAllTasks = exports.removeCompletedTasks = exports.resetSearchTask = exports.searchTask = exports.filterTask = exports.changeStatus = exports.cancelTask = exports.saveTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
@@ -355,7 +357,9 @@ function createNewTasks(evnt) {
     }
 }
 function deleteTask(id, container) {
-    container.parentNode.removeChild(container);
+    if (container) {
+        container.parentNode.removeChild(container);
+    }
     _controller.taskManager.delete(id);
 };
 
@@ -451,6 +455,30 @@ function resetSearchTask(evnt) {
     filterTask(filterMode);
     resetSearchButton.classList.remove('open');
 }
+function removeCompletedTasks(evnt) {
+    evnt.preventDefault();
+    var removetList = _controller.taskManager.tasksList.filter(function (el) {
+        return el.status == _constant.STATUS.completed;
+    });
+    var checkTasks = document.querySelectorAll('.btn-status-complete');
+    checkTasks.forEach(function (el) {
+        if (el.getAttribute('checked') == 'true') {
+            var removerForm = el.closest('form');
+            removerForm.parentNode.removeChild(removerForm);
+        }
+    });
+
+    removetList.forEach(function (el) {
+        return deleteTask(el.id);
+    });
+}
+function removeAllTasks(evnt) {
+    evnt.preventDefault();
+    _constant.TASK_AREA.innerHTML = '';
+    _controller.taskManager.tasksList.forEach(function (el) {
+        return deleteTask(el.id);
+    });
+}
 function clearFilter() {
     filterTask();
     _index.filterButton.innerHTML = "All";
@@ -468,6 +496,8 @@ exports.changeStatus = changeStatus;
 exports.filterTask = filterTask;
 exports.searchTask = searchTask;
 exports.resetSearchTask = resetSearchTask;
+exports.removeCompletedTasks = removeCompletedTasks;
+exports.removeAllTasks = removeAllTasks;
 
 /***/ }),
 
