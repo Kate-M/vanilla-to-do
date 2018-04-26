@@ -1,70 +1,48 @@
-import { STATUS } from './constant';
-import {
-    createNewTasks,
-    deleteTask,
-    editTask,
-    saveTask,
-    cancelTask,
-    changeStatus,
-    filterTask
-} from './task-logic'
+import { startEvents } from './index';
+import { drawTask } from './dom';
 
-let filterContainer = document.querySelector('.filter-task');
-
-export function startEvents() {
-    document.getElementById('add-task').addEventListener('click', createNewTasks);
-    document.querySelectorAll('.tasks-wrap').forEach(
-        el => el.querySelector('.form').onclick = function (evnt) {
-            evnt.preventDefault();
-            let targetForm = evnt.target.closest('form');
-            let targetButton = evnt.target.getAttribute('data-state');
-            let targetTaskId = targetForm.querySelector('.name-field').getAttribute('data-id');
-            let targetTaskName = targetForm.querySelector('.name-field').innerHTML;
-
-            switch (targetButton) {
-                case 'delete-task':
-                    deleteTask(targetTaskId);
-                    break;
-                case 'edit-task':
-                    editTask(targetForm, targetTaskName, targetTaskId);
-                    break;
-                case 'cancel-task':
-                    cancelTask(targetForm);
-                    break;
-                case 'save-task':
-                    saveTask(targetForm, targetTaskId);
-                    break;
-                case 'status-task':
-                    changeStatus(targetTaskId, STATUS.processing);
-                    break;
-                case 'status-complete-task':
-                    changeStatus(targetTaskId, STATUS.completed);
-                    break;
-            }
-        }
-    );
-    document.querySelector('.filter-btn').onclick = function () {
-        filterContainer.classList.toggle('open');
+class TaskManager {
+    constructor() {
+        this.tasksList = [];
     }
-    document.querySelectorAll('.filter-item').forEach(
-        el => el.onclick = function (evnt) {
-            evnt.preventDefault();
-            filterContainer.classList.remove('open');
-            let targetFilter = evnt.target.getAttribute('data-filter');
-            switch (targetFilter) {
-                case 'filter-all':
-                    filterTask();
-                    break;
-                case 'filter-in-progress':
-                    filterTask(STATUS.processing);
-                    break;
-                case 'filter-complete':
-                    filterTask(STATUS.completed);
-                    break;
-                default:
-                    console.log('other');
-            }
-        }
-    );
 
+    init() {
+        if (typeof (Storage) !== "undefined") {
+            if (localStorage.getItem('tasksDB')) {
+                this.tasksList = JSON.parse(localStorage.getItem("tasksDB"));
+                this.tasksList.forEach(el => drawTask(el.id,el.name, el.status));
+            }
+        } else {
+            console.log('Sorry! No Web Storage support');
+        }
+        startEvents();
+    }
+
+    get(id) {
+        return this.tasksList.filter((el, index, array) =>
+            el.id == id)[0];
+    }
+
+    add(item) {
+        this.tasksList.push(item);
+        sendTaskInLocalDB(this.tasksList); 
+     }
+
+    save() {
+        sendTaskInLocalDB(this.tasksList);
+    }
+
+    delete(id) {
+        this.tasksList = this.tasksList.filter(i => i.id != id);
+        sendTaskInLocalDB(this.tasksList);
+    }
 }
+
+let taskManager = new TaskManager();
+
+function sendTaskInLocalDB(tasksList) {
+    let serialTasksList = JSON.stringify(tasksList);
+    localStorage.setItem("tasksDB", serialTasksList);
+}
+
+export { sendTaskInLocalDB, taskManager };

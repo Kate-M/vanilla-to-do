@@ -1,5 +1,5 @@
 import { STATUS, TASK_AREA } from './constant';
-import { tasksList, sendTaskInLocalDB } from './index';
+import { taskManager } from './controller';
 import { drawTask } from './dom';
 
 function createNewTasks(evnt) {
@@ -11,60 +11,58 @@ function createNewTasks(evnt) {
         document.querySelector('.add-task .error').innerHTML = "Invalid value";
     } else {
         let taskId = new Date().valueOf() + '_' + taskName;
-        tasksList.push({
+        taskManager.add({
             status: STATUS.default,
             id: taskId,
             name: taskName
         });
         document.querySelector('.add-field').value = '';
-        sendTaskInLocalDB(tasksList);
         drawTask(taskId, taskName, STATUS.default);
     }
 }
-function deleteTask(id) {
-    let list = tasksList.filter((el, index, arr) => arr[index].id != id);
-    sendTaskInLocalDB(list);
+function deleteTask(id, container) {
+    container.parentNode.removeChild(container);
+    taskManager.delete(id);
 };
 
 function editTask(form, name, id) {
     form.classList.add('edit-mode');
-};
+}
 
-function saveTask(form, id) {
+function saveTask(form, id) {    
     let newTaskName = form.querySelector('.edit-name-field').value.trim();
-    let currentTask = tasksList.filter((el, index, array) =>
-        array[index].id == id && newTaskName != ''
-    )
-    currentTask[0].name = newTaskName;
-    sendTaskInLocalDB(tasksList);
+    let task = taskManager.get(id); 
+    task.name = newTaskName;
+    taskManager.save();
+
+    let labelTask = form.querySelector('.name-field');
+    labelTask.innerHTML = newTaskName;
+    form.classList.remove('edit-mode');
 };
 
 function cancelTask(form) {
     form.classList.remove('edit-mode');
 };
 
-function changeStatus(id, statusValue) {
-    let currentTask = selectTask(id);
-    if (currentTask[0].status == statusValue) {
-        currentTask[0].status = STATUS.default;
+function changeStatus(form, id, statusValue) {
+    let currentTask = taskManager.get(id);
+    
+    if (currentTask.status == statusValue) {
+        currentTask.status = STATUS.default;
     } else {
-        currentTask[0].status = statusValue;
+        currentTask.status = statusValue;
     }
-    sendTaskInLocalDB(tasksList);
-}
-
-function selectTask(id) {
-    return tasksList.filter((el, index, array) =>
-        array[index].id == id
-    )
+    form.querySelector('.btn-status-complete').setAttribute('checked', currentTask.status == 2)
+    form.querySelector('.btn-status').setAttribute('data-status', currentTask.status)
+    taskManager.save();
 }
 
 function filterTask(filterParam){
     TASK_AREA.innerHTML = '';
     if(!filterParam) {
-        tasksList.forEach(el =>  drawTask(el.id, el.name, el.status))
+        taskManager.tasksList.forEach(el =>  drawTask(el.id, el.name, el.status))
     } else {
-        let filteredTasks = tasksList.filter((el, index, array) => el.status == filterParam);
+        let filteredTasks = taskManager.tasksList.filter((el, index, array) => el.status == filterParam);
         filteredTasks.forEach(el =>  drawTask(el.id, el.name, el.status));
     }
 }

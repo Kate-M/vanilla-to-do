@@ -2,7 +2,14 @@
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    height: 35px;
+    .control-item {
+        height: 35px;
+        &:not(:last-child){
+            @media screen and (max-width: 767px) {
+                margin-bottom: 10px;
+            }
+        }
+    }
     @media screen and (max-width: 767px) {
         flex-direction: column;
         align-items: flex-start;

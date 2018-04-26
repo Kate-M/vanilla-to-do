@@ -4,10 +4,7 @@
     }
 }    
 .tasks-wrap {
-    border: 1px solid #e7e7e7;
-    background: #F4F4F4;
-    padding: 10px;
-    border-radius: 3px;
+    
     &:not(:last-child) {
         margin-bottom: 10px;
     }
