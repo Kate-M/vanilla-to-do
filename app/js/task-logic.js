@@ -4,11 +4,12 @@ import { drawTask } from './dom';
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
-
+    let errorField = document.querySelector('.add-task .error');
+    errorField.innerHTML = '';
     let taskName = document.querySelector('.add-field').value.trim();
 
     if (!taskName) {
-        document.querySelector('.add-task .error').innerHTML = "Invalid value";
+        errorField.innerHTML = "Invalid value";
     } else {
         let taskId = new Date().valueOf() + '_' + taskName;
         taskManager.add({

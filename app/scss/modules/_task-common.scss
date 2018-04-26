@@ -23,6 +23,9 @@ main {
     border-radius: 3px;
     border: 1px solid #E7E7E7;
 }
+.btn-group {
+    @include center-x;
+} 
 .btn {
     @include center-all;
     position: relative;
@@ -56,10 +59,12 @@ main {
 }
 .btn-lg {
     border-radius: 3px;
+    padding: 0 10px;
+    min-width: 130px;
+    &:not(:last-child) {
+        margin-right: 10px;
+    }
 }
-.btn-group {
-    @include center-x;
-} 
 .btn-sm {
     width: 30px;
     height: 30px;
@@ -122,8 +127,11 @@ main {
         display: none;
     }
 }
-.btn-lg {
-    padding: 0 10px;
-    margin-right: 10px;
-    min-width: 130px;
+.controls-task-secondary {
+    .btn-group {
+        @media screen and (max-width: 767px) {
+            justify-content: space-between;
+        }
+    }
 }
+

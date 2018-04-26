@@ -38,7 +38,7 @@ class TaskManager {
     }
 }
 
-let taskManager = new TaskManager();
+var taskManager = new TaskManager();
 
 function sendTaskInLocalDB(tasksList) {
     let serialTasksList = JSON.stringify(tasksList);

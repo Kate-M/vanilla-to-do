@@ -1,6 +1,7 @@
 .tasks-container {
-    @media screen and (min-width: 767px) {
-        width: 50%;
+    width: 50%;
+    @media screen and (max-width: 767px) {
+        width: 100%;
     }
 }    
 .tasks-wrap {

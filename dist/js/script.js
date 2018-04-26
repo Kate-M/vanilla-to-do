@@ -319,11 +319,12 @@ var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
-
+    var errorField = document.querySelector('.add-task .error');
+    errorField.innerHTML = '';
     var taskName = document.querySelector('.add-field').value.trim();
 
     if (!taskName) {
-        document.querySelector('.add-task .error').innerHTML = "Invalid value";
+        errorField.innerHTML = "Invalid value";
     } else {
         var taskId = new Date().valueOf() + '_' + taskName;
         _controller.taskManager.add({
