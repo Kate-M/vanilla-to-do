@@ -226,6 +226,7 @@ exports.drawTask = drawTask;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.filterButton = undefined;
 exports.startEvents = startEvents;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
@@ -235,6 +236,7 @@ var _controller = __webpack_require__(/*! ./controller */ "./app/js/controller.j
 var _taskLogic = __webpack_require__(/*! ./task-logic */ "./app/js/task-logic.js");
 
 var filterContainer = document.querySelector('.filter-task');
+var filterButton = exports.filterButton = document.querySelector('.filter-btn');
 
 function startEvents() {
     document.getElementById('add-task').addEventListener('click', _taskLogic.createNewTasks);
@@ -245,19 +247,20 @@ function startEvents() {
         var targetButton = evnt.target.getAttribute('data-state');
         var targetTaskId = targetForm.querySelector('.name-field').getAttribute('data-id');
         var targetTaskName = targetForm.querySelector('.name-field').innerHTML;
+
         switch (targetButton) {
             case 'delete-task':
                 (0, _taskLogic.deleteTask)(targetTaskId, targetContainer);
                 console.log(targetTaskId);
                 break;
             case 'edit-task':
-                (0, _taskLogic.editTask)(targetForm, targetTaskName, targetTaskId);
+                (0, _taskLogic.editTask)(targetForm);
                 break;
             case 'cancel-task':
                 (0, _taskLogic.cancelTask)(targetForm);
                 break;
             case 'save-task':
-                (0, _taskLogic.saveTask)(targetForm, targetTaskId);
+                (0, _taskLogic.saveTask)(targetForm, targetTaskId, targetTaskName);
                 break;
             case 'status-task':
                 (0, _taskLogic.changeStatus)(targetForm, targetTaskId, _constant.STATUS.processing);
@@ -267,14 +270,17 @@ function startEvents() {
                 break;
         }
     });
-    document.querySelector('.filter-btn').onclick = function () {
+    filterButton.onclick = function () {
         filterContainer.classList.toggle('open');
     };
     document.querySelectorAll('.filter-item').forEach(function (el) {
         return el.onclick = function (evnt) {
             evnt.preventDefault();
             filterContainer.classList.remove('open');
+            var activeFilter = evnt.target.innerHTML;
+            filterButton.innerHTML = activeFilter;
             var targetFilter = evnt.target.getAttribute('data-filter');
+
             switch (targetFilter) {
                 case 'filter-all':
                     (0, _taskLogic.filterTask)();
@@ -317,10 +323,16 @@ var _controller = __webpack_require__(/*! ./controller */ "./app/js/controller.j
 
 var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
 
+var _index = __webpack_require__(/*! ./index */ "./app/js/index.js");
+
+var errorField = document.querySelector('.add-task .error');
+var addFied = document.querySelector('.add-field');
+
 function createNewTasks(evnt) {
     evnt.preventDefault();
-    var errorField = document.querySelector('.add-task .error');
-    errorField.innerHTML = '';
+    clearFilter();
+    clearField(errorField);
+
     var taskName = document.querySelector('.add-field').value.trim();
 
     if (!taskName) {
@@ -333,6 +345,7 @@ function createNewTasks(evnt) {
             name: taskName
         });
         document.querySelector('.add-field').value = '';
+
         (0, _dom.drawTask)(taskId, taskName, _constant.STATUS.default);
     }
 }
@@ -341,18 +354,21 @@ function deleteTask(id, container) {
     _controller.taskManager.delete(id);
 };
 
-function editTask(form, name, id) {
+function editTask(form) {
     form.classList.add('edit-mode');
 }
 
-function saveTask(form, id) {
+function saveTask(form, id, name) {
     var newTaskName = form.querySelector('.edit-name-field').value.trim();
     var task = _controller.taskManager.get(id);
-    task.name = newTaskName;
-    _controller.taskManager.save();
-
     var labelTask = form.querySelector('.name-field');
-    labelTask.innerHTML = newTaskName;
+    if (newTaskName != '') {
+        task.name = newTaskName;
+        labelTask.innerHTML = newTaskName;
+        _controller.taskManager.save();
+    } else {
+        labelTask.innerHTML = name;
+    }
     form.classList.remove('edit-mode');
 };
 
@@ -387,6 +403,13 @@ function filterTask(filterParam) {
             return (0, _dom.drawTask)(el.id, el.name, el.status);
         });
     }
+}
+function clearFilter() {
+    filterTask();
+    _index.filterButton.innerHTML = "All";
+}
+function clearField(field) {
+    field.innerHTML = '';
 }
 
 exports.createNewTasks = createNewTasks;

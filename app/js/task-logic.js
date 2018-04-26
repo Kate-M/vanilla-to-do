@@ -1,11 +1,16 @@
 import { STATUS, TASK_AREA } from './constant';
 import { taskManager } from './controller';
 import { drawTask } from './dom';
+import { filterButton } from './index';
+
+let errorField = document.querySelector('.add-task .error');
+let addFied = document.querySelector('.add-field');
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
-    let errorField = document.querySelector('.add-task .error');
-    errorField.innerHTML = '';
+    clearFilter();
+    clearField(errorField);
+
     let taskName = document.querySelector('.add-field').value.trim();
 
     if (!taskName) {
@@ -18,6 +23,7 @@ function createNewTasks(evnt) {
             name: taskName
         });
         document.querySelector('.add-field').value = '';
+
         drawTask(taskId, taskName, STATUS.default);
     }
 }
@@ -26,18 +32,21 @@ function deleteTask(id, container) {
     taskManager.delete(id);
 };
 
-function editTask(form, name, id) {
+function editTask(form) {
     form.classList.add('edit-mode');
 }
 
-function saveTask(form, id) {    
+function saveTask(form, id, name) {   
     let newTaskName = form.querySelector('.edit-name-field').value.trim();
-    let task = taskManager.get(id); 
-    task.name = newTaskName;
-    taskManager.save();
-
+    let task = taskManager.get(id);
     let labelTask = form.querySelector('.name-field');
-    labelTask.innerHTML = newTaskName;
+    if(newTaskName != ''){
+        task.name = newTaskName;
+        labelTask.innerHTML = newTaskName;
+        taskManager.save();
+    }else {
+        labelTask.innerHTML = name;
+    }
     form.classList.remove('edit-mode');
 };
 
@@ -66,6 +75,13 @@ function filterTask(filterParam){
         let filteredTasks = taskManager.tasksList.filter((el, index, array) => el.status == filterParam);
         filteredTasks.forEach(el =>  drawTask(el.id, el.name, el.status));
     }
+}
+function clearFilter() {
+    filterTask();
+    filterButton.innerHTML = "All";
+}
+function clearField(field) {
+    field.innerHTML = '';
 }
 
 export {
