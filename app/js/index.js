@@ -7,10 +7,13 @@ import {
     saveTask,
     cancelTask,
     changeStatus,
-    filterTask
+    filterTask,
+    searchTask,
+    resetSearchTask
 } from './task-logic'
 
 let filterContainer = document.querySelector('.filter-task');
+export let filterButton = document.querySelector('.filter-btn');
 
 export function startEvents() {
     document.getElementById('add-task').addEventListener('click', createNewTasks);
@@ -22,19 +25,20 @@ export function startEvents() {
             let targetButton = evnt.target.getAttribute('data-state');
             let targetTaskId = targetForm.querySelector('.name-field').getAttribute('data-id');
             let targetTaskName = targetForm.querySelector('.name-field').innerHTML;
+            
             switch (targetButton) {
                 case 'delete-task':
                     deleteTask(targetTaskId, targetContainer);
                     console.log(targetTaskId);
                     break;
                 case 'edit-task':
-                    editTask(targetForm, targetTaskName, targetTaskId);
+                    editTask(targetForm);
                     break;
                 case 'cancel-task':
                     cancelTask(targetForm);
                     break;
                 case 'save-task':
-                    saveTask(targetForm, targetTaskId);
+                    saveTask(targetForm, targetTaskId, targetTaskName);
                     break;
                 case 'status-task':
                     changeStatus(targetForm, targetTaskId, STATUS.processing);
@@ -46,14 +50,17 @@ export function startEvents() {
         }
 
     );
-    document.querySelector('.filter-btn').onclick = function () {
+    filterButton.onclick = function () {
         filterContainer.classList.toggle('open');
     }
     document.querySelectorAll('.filter-item').forEach(
         el => el.onclick = function (evnt) {
             evnt.preventDefault();
             filterContainer.classList.remove('open');
+            let activeFilter = evnt.target.innerHTML;
+            filterButton.innerHTML = activeFilter;
             let targetFilter = evnt.target.getAttribute('data-filter');
+
             switch (targetFilter) {
                 case 'filter-all':
                     filterTask();
@@ -69,7 +76,8 @@ export function startEvents() {
             }
         }
     );
-
+    document.getElementById('search-btn').addEventListener('click', searchTask);
+    document.getElementById('reset-search-btn').addEventListener('click', resetSearchTask);
 }
 
 document.addEventListener('DOMContentLoaded', taskManager.init());

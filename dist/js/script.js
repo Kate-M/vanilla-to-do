@@ -226,6 +226,7 @@ exports.drawTask = drawTask;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.filterButton = undefined;
 exports.startEvents = startEvents;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
@@ -235,6 +236,7 @@ var _controller = __webpack_require__(/*! ./controller */ "./app/js/controller.j
 var _taskLogic = __webpack_require__(/*! ./task-logic */ "./app/js/task-logic.js");
 
 var filterContainer = document.querySelector('.filter-task');
+var filterButton = exports.filterButton = document.querySelector('.filter-btn');
 
 function startEvents() {
     document.getElementById('add-task').addEventListener('click', _taskLogic.createNewTasks);
@@ -245,19 +247,20 @@ function startEvents() {
         var targetButton = evnt.target.getAttribute('data-state');
         var targetTaskId = targetForm.querySelector('.name-field').getAttribute('data-id');
         var targetTaskName = targetForm.querySelector('.name-field').innerHTML;
+
         switch (targetButton) {
             case 'delete-task':
                 (0, _taskLogic.deleteTask)(targetTaskId, targetContainer);
                 console.log(targetTaskId);
                 break;
             case 'edit-task':
-                (0, _taskLogic.editTask)(targetForm, targetTaskName, targetTaskId);
+                (0, _taskLogic.editTask)(targetForm);
                 break;
             case 'cancel-task':
                 (0, _taskLogic.cancelTask)(targetForm);
                 break;
             case 'save-task':
-                (0, _taskLogic.saveTask)(targetForm, targetTaskId);
+                (0, _taskLogic.saveTask)(targetForm, targetTaskId, targetTaskName);
                 break;
             case 'status-task':
                 (0, _taskLogic.changeStatus)(targetForm, targetTaskId, _constant.STATUS.processing);
@@ -267,14 +270,17 @@ function startEvents() {
                 break;
         }
     });
-    document.querySelector('.filter-btn').onclick = function () {
+    filterButton.onclick = function () {
         filterContainer.classList.toggle('open');
     };
     document.querySelectorAll('.filter-item').forEach(function (el) {
         return el.onclick = function (evnt) {
             evnt.preventDefault();
             filterContainer.classList.remove('open');
+            var activeFilter = evnt.target.innerHTML;
+            filterButton.innerHTML = activeFilter;
             var targetFilter = evnt.target.getAttribute('data-filter');
+
             switch (targetFilter) {
                 case 'filter-all':
                     (0, _taskLogic.filterTask)();
@@ -290,6 +296,8 @@ function startEvents() {
             }
         };
     });
+    document.getElementById('search-btn').addEventListener('click', _taskLogic.searchTask);
+    document.getElementById('reset-search-btn').addEventListener('click', _taskLogic.resetSearchTask);
 }
 
 document.addEventListener('DOMContentLoaded', _controller.taskManager.init());
@@ -309,7 +317,7 @@ document.addEventListener('DOMContentLoaded', _controller.taskManager.init());
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.filterTask = exports.changeStatus = exports.cancelTask = exports.saveTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
+exports.resetSearchTask = exports.searchTask = exports.filterTask = exports.changeStatus = exports.cancelTask = exports.saveTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
@@ -317,10 +325,19 @@ var _controller = __webpack_require__(/*! ./controller */ "./app/js/controller.j
 
 var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
 
+var _index = __webpack_require__(/*! ./index */ "./app/js/index.js");
+
+var errorField = document.querySelector('.error');
+var addFied = document.querySelector('.add-field');
+var resetSearchButton = document.querySelector('.reset-search');
+var inFiltered = void 0;
+var inSearched = void 0;
+
 function createNewTasks(evnt) {
     evnt.preventDefault();
-    var errorField = document.querySelector('.add-task .error');
-    errorField.innerHTML = '';
+    clearFilter();
+    clearField(errorField);
+    inSearched = null;
     var taskName = document.querySelector('.add-field').value.trim();
 
     if (!taskName) {
@@ -333,6 +350,7 @@ function createNewTasks(evnt) {
             name: taskName
         });
         document.querySelector('.add-field').value = '';
+
         (0, _dom.drawTask)(taskId, taskName, _constant.STATUS.default);
     }
 }
@@ -341,18 +359,21 @@ function deleteTask(id, container) {
     _controller.taskManager.delete(id);
 };
 
-function editTask(form, name, id) {
+function editTask(form) {
     form.classList.add('edit-mode');
 }
 
-function saveTask(form, id) {
+function saveTask(form, id, name) {
     var newTaskName = form.querySelector('.edit-name-field').value.trim();
     var task = _controller.taskManager.get(id);
-    task.name = newTaskName;
-    _controller.taskManager.save();
-
     var labelTask = form.querySelector('.name-field');
-    labelTask.innerHTML = newTaskName;
+    if (newTaskName != '') {
+        task.name = newTaskName;
+        labelTask.innerHTML = newTaskName;
+        _controller.taskManager.save();
+    } else {
+        labelTask.innerHTML = name;
+    }
     form.classList.remove('edit-mode');
 };
 
@@ -368,25 +389,74 @@ function changeStatus(form, id, statusValue) {
     } else {
         currentTask.status = statusValue;
     }
-    form.querySelector('.btn-status-complete').setAttribute('checked', currentTask.status == 2);
+    form.querySelector('.btn-status-complete').setAttribute('checked', currentTask.status == _constant.STATUS.completed);
     form.querySelector('.btn-status').setAttribute('data-status', currentTask.status);
     _controller.taskManager.save();
 }
-
+var filterMode = void 0;
 function filterTask(filterParam) {
+    filterMode = filterParam;
     _constant.TASK_AREA.innerHTML = '';
+    var filteredTasksList = inSearched ? inSearched : _controller.taskManager.tasksList;
     if (!filterParam) {
-        _controller.taskManager.tasksList.forEach(function (el) {
+        filteredTasksList.forEach(function (el) {
             return (0, _dom.drawTask)(el.id, el.name, el.status);
         });
+        inFiltered = null;
     } else {
-        var filteredTasks = _controller.taskManager.tasksList.filter(function (el, index, array) {
+        var filteredTasks = filteredTasksList.filter(function (el, index, array) {
             return el.status == filterParam;
         });
         filteredTasks.forEach(function (el) {
             return (0, _dom.drawTask)(el.id, el.name, el.status);
         });
+        inFiltered = filteredTasks;
+
+        if (filteredTasks.length == 0) {
+            _constant.TASK_AREA.innerHTML = 'Nothing';
+        }
     }
+}
+function searchTask(evnt) {
+    evnt.preventDefault();
+    clearField(errorField);
+
+    var serchedTasksList = inFiltered ? inFiltered : _controller.taskManager.tasksList;
+    var searchValue = document.querySelector('.search-form .search-field').value.trim();
+
+    if (searchValue != '') {
+        _constant.TASK_AREA.innerHTML = '';
+        resetSearchButton.classList.add('open');
+
+        var serchedTasks = serchedTasksList.filter(function (el, index, array) {
+            return el.name == searchValue;
+        });
+        serchedTasks.forEach(function (el) {
+            return (0, _dom.drawTask)(el.id, el.name, el.status);
+        });
+        inSearched = serchedTasks;
+
+        if (serchedTasks.length == 0) {
+            _constant.TASK_AREA.innerHTML = 'Nothing';
+        }
+    } else {
+        errorField.innerHTML = "Empty field";
+        inSearched = null;
+    }
+}
+function resetSearchTask(evnt) {
+    evnt.preventDefault();
+    document.querySelector('.search-field').value = '';
+    inSearched = null;
+    filterTask(filterMode);
+    resetSearchButton.classList.remove('open');
+}
+function clearFilter() {
+    filterTask();
+    _index.filterButton.innerHTML = "All";
+}
+function clearField(field) {
+    field.innerHTML = '';
 }
 
 exports.createNewTasks = createNewTasks;
@@ -396,6 +466,8 @@ exports.saveTask = saveTask;
 exports.cancelTask = cancelTask;
 exports.changeStatus = changeStatus;
 exports.filterTask = filterTask;
+exports.searchTask = searchTask;
+exports.resetSearchTask = resetSearchTask;
 
 /***/ }),
 

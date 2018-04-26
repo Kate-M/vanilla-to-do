@@ -2,6 +2,16 @@
     display: flex;
     justify-content: space-between;
     align-items: stretch;
+    position: relative;
+    flex-wrap: wrap;
+    .error {
+        position: absolute;
+        left: 0;
+        top: -30px;
+        width: 100%;
+        text-align: center;
+        color:#F1646C;
+    }
     .control-item {
         height: 35px;
         @media screen and (max-width: 767px) {
@@ -44,18 +54,10 @@
         }
     }
 }
-.add-task {
-    position: relative;
-    .error {
-        position: absolute;
-        bottom: -20px;
-        left: 5px;
-        color:#F1646C;
-    }
-}
 .filter-task.open {
     .filter-select{
         display: block;
+        overflow: hidden;
     }
 }
 .filter-task {
@@ -104,5 +106,14 @@
         &:hover {
             background:#E3DFE4;
         }
+    }
+}
+.reset-search {
+    display: none;
+    margin-top:20px;
+    width: 100%;
+    justify-content: center;
+    &.open {
+        display: flex;
     }
 }
