@@ -31,25 +31,27 @@ function createNewTasks(evnt) {
     }
 }
 function deleteTask(id, container) {
-    if(container){
+    if (container) {
         container.parentNode.removeChild(container);
     }
-    taskManager.delete(id);
+    if (id) {
+        taskManager.delete(id);
+    }
 };
 
 function editTask(form) {
     form.classList.add('edit-mode');
 }
 
-function saveTask(form, id, name) {   
+function saveTask(form, id, name) {
     let newTaskName = form.querySelector('.edit-name-field').value.trim();
     let task = taskManager.get(id);
     let labelTask = form.querySelector('.name-field');
-    if(newTaskName != ''){
+    if (newTaskName != '') {
         task.name = newTaskName;
         labelTask.innerHTML = newTaskName;
         taskManager.save();
-    }else {
+    } else {
         labelTask.innerHTML = name;
     }
     form.classList.remove('edit-mode');
@@ -61,7 +63,7 @@ function cancelTask(form) {
 
 function changeStatus(form, id, statusValue) {
     let currentTask = taskManager.get(id);
-    
+
     if (currentTask.status == statusValue) {
         currentTask.status = STATUS.default;
     } else {
@@ -72,40 +74,40 @@ function changeStatus(form, id, statusValue) {
     taskManager.save();
 }
 let filterMode;
-function filterTask(filterParam){
+function filterTask(filterParam) {
     filterMode = filterParam;
     TASK_AREA.innerHTML = '';
     let filteredTasksList = inSearched ? inSearched : taskManager.tasksList;
-    if(!filterParam) {
-        filteredTasksList.forEach(el =>  drawTask(el.id, el.name, el.status));
+    if (!filterParam) {
+        filteredTasksList.forEach(el => drawTask(el.id, el.name, el.status));
         inFiltered = null;
     } else {
         let filteredTasks = filteredTasksList.filter((el, index, array) => el.status == filterParam);
-        filteredTasks.forEach(el =>  drawTask(el.id, el.name, el.status));
+        filteredTasks.forEach(el => drawTask(el.id, el.name, el.status));
         inFiltered = filteredTasks;
-        
-        if(filteredTasks.length == 0){ 
+
+        if (filteredTasks.length == 0) {
             TASK_AREA.innerHTML = 'Nothing';
         }
     }
-   
+
 }
-function searchTask(evnt){
+function searchTask(evnt) {
     evnt.preventDefault();
     clearField(errorField);
 
     let serchedTasksList = inFiltered ? inFiltered : taskManager.tasksList;
     let searchValue = document.querySelector('.search-form .search-field').value.trim();
 
-    if(searchValue != '') {
+    if (searchValue != '') {
         TASK_AREA.innerHTML = '';
         resetSearchButton.classList.add('open');
 
         let serchedTasks = serchedTasksList.filter((el, index, array) => el.name == searchValue);
-        serchedTasks.forEach(el =>  drawTask(el.id, el.name, el.status));
+        serchedTasks.forEach(el => drawTask(el.id, el.name, el.status));
         inSearched = serchedTasks;
 
-        if(serchedTasks.length == 0){ 
+        if (serchedTasks.length == 0) {
             TASK_AREA.innerHTML = 'Nothing';
         }
 
@@ -125,21 +127,19 @@ function removeCompletedTasks(evnt) {
     evnt.preventDefault();
     let removetList = taskManager.tasksList.filter(el => el.status == STATUS.completed);
     let checkTasks = document.querySelectorAll('.btn-status-complete');
-    checkTasks.forEach(el =>  
-        { 
-        if(el.getAttribute('checked') == 'true') {
+    checkTasks.forEach(el => {
+        if (el.getAttribute('checked') == 'true') {
             let removerForm = el.closest('form');
-            removerForm.parentNode.removeChild(removerForm);
+            deleteTask(false, removerForm)
         }
-        }
-    ); 
-
-    removetList.forEach(el =>  deleteTask(el.id)); 
+    }
+    );
+    removetList.forEach(el => deleteTask(el.id));
 }
 function removeAllTasks(evnt) {
     evnt.preventDefault();
     TASK_AREA.innerHTML = '';
-    taskManager.tasksList.forEach(el =>  deleteTask(el.id)); 
+    taskManager.tasksList.forEach(el => deleteTask(el.id));
 }
 function clearFilter() {
     filterTask();

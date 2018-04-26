@@ -54,13 +54,7 @@ module.exports = {
                                 ]
                             }
                         },
-                        // {
-                        //     loader: 'sass-resources-loader',
-                        //     options: {
-                        //         resources: 'app/scss/base.scss'
-                        //     }
-                        // }
-                    ]
+                     ]
                 })
             }
         ]
