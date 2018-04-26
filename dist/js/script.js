@@ -296,6 +296,8 @@ function startEvents() {
             }
         };
     });
+    document.getElementById('search-btn').addEventListener('click', _taskLogic.searchTask);
+    document.getElementById('reset-search-btn').addEventListener('click', _taskLogic.resetSearchTask);
 }
 
 document.addEventListener('DOMContentLoaded', _controller.taskManager.init());
@@ -315,7 +317,7 @@ document.addEventListener('DOMContentLoaded', _controller.taskManager.init());
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.filterTask = exports.changeStatus = exports.cancelTask = exports.saveTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
+exports.resetSearchTask = exports.searchTask = exports.filterTask = exports.changeStatus = exports.cancelTask = exports.saveTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
@@ -325,14 +327,17 @@ var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
 
 var _index = __webpack_require__(/*! ./index */ "./app/js/index.js");
 
-var errorField = document.querySelector('.add-task .error');
+var errorField = document.querySelector('.error');
 var addFied = document.querySelector('.add-field');
+var resetSearchButton = document.querySelector('.reset-search');
+var inFiltered = void 0;
+var inSearched = void 0;
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
     clearFilter();
     clearField(errorField);
-
+    inSearched = null;
     var taskName = document.querySelector('.add-field').value.trim();
 
     if (!taskName) {
@@ -384,25 +389,67 @@ function changeStatus(form, id, statusValue) {
     } else {
         currentTask.status = statusValue;
     }
-    form.querySelector('.btn-status-complete').setAttribute('checked', currentTask.status == 2);
+    form.querySelector('.btn-status-complete').setAttribute('checked', currentTask.status == _constant.STATUS.completed);
     form.querySelector('.btn-status').setAttribute('data-status', currentTask.status);
     _controller.taskManager.save();
 }
-
+var filterMode = void 0;
 function filterTask(filterParam) {
+    filterMode = filterParam;
     _constant.TASK_AREA.innerHTML = '';
+    var filteredTasksList = inSearched ? inSearched : _controller.taskManager.tasksList;
     if (!filterParam) {
-        _controller.taskManager.tasksList.forEach(function (el) {
+        filteredTasksList.forEach(function (el) {
             return (0, _dom.drawTask)(el.id, el.name, el.status);
         });
+        inFiltered = null;
     } else {
-        var filteredTasks = _controller.taskManager.tasksList.filter(function (el, index, array) {
+        var filteredTasks = filteredTasksList.filter(function (el, index, array) {
             return el.status == filterParam;
         });
         filteredTasks.forEach(function (el) {
             return (0, _dom.drawTask)(el.id, el.name, el.status);
         });
+        inFiltered = filteredTasks;
+
+        if (filteredTasks.length == 0) {
+            _constant.TASK_AREA.innerHTML = 'Nothing';
+        }
     }
+}
+function searchTask(evnt) {
+    evnt.preventDefault();
+    clearField(errorField);
+
+    var serchedTasksList = inFiltered ? inFiltered : _controller.taskManager.tasksList;
+    var searchValue = document.querySelector('.search-form .search-field').value.trim();
+
+    if (searchValue != '') {
+        _constant.TASK_AREA.innerHTML = '';
+        resetSearchButton.classList.add('open');
+
+        var serchedTasks = serchedTasksList.filter(function (el, index, array) {
+            return el.name == searchValue;
+        });
+        serchedTasks.forEach(function (el) {
+            return (0, _dom.drawTask)(el.id, el.name, el.status);
+        });
+        inSearched = serchedTasks;
+
+        if (serchedTasks.length == 0) {
+            _constant.TASK_AREA.innerHTML = 'Nothing';
+        }
+    } else {
+        errorField.innerHTML = "Empty field";
+        inSearched = null;
+    }
+}
+function resetSearchTask(evnt) {
+    evnt.preventDefault();
+    document.querySelector('.search-field').value = '';
+    inSearched = null;
+    filterTask(filterMode);
+    resetSearchButton.classList.remove('open');
 }
 function clearFilter() {
     filterTask();
@@ -419,6 +466,8 @@ exports.saveTask = saveTask;
 exports.cancelTask = cancelTask;
 exports.changeStatus = changeStatus;
 exports.filterTask = filterTask;
+exports.searchTask = searchTask;
+exports.resetSearchTask = resetSearchTask;
 
 /***/ }),
 

@@ -31,7 +31,6 @@
                         <form action="smth" class="form add-form">
                             <fieldset class="field-wrap">
                                 <input type="text" class="add-field" placeholder="Add a task">
-                                <p class="error"></p>
                             </fieldset>
                             <button class="btn btn-md add-btn" id="add-task"></button>
                         </form>
@@ -39,9 +38,9 @@
                     <div class="control-item search-task">
                         <form action="" class="form search-form">
                             <fieldset class="field-wrap">
-                                <input type="text" class="search-field" placeholder="Search">
+                                <input type="text" class="search-field" id="search-field" placeholder="Search">
                             </fieldset>
-                            <button class="btn btn-md search-btn"></button>
+                            <button class="btn btn-md search-btn" id="search-btn"></button>
                         </form>
                     </div>
                     <div class="control-item filter-task">
@@ -60,6 +59,10 @@
                             </li>
                         </ul>
                     </div>
+                    <div class="control-item reset-search">
+                        <button class="btn btn-lg reset-btn" id="reset-search-btn">Reset search</button>
+                    </div>
+                    <p class="error"></p>
                 </section>
                 <section id="tasks-container" class="tasks-container"></section>
                 <section class="controls-task-secondary">

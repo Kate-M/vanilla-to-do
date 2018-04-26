@@ -3,14 +3,17 @@ import { taskManager } from './controller';
 import { drawTask } from './dom';
 import { filterButton } from './index';
 
-let errorField = document.querySelector('.add-task .error');
+let errorField = document.querySelector('.error');
 let addFied = document.querySelector('.add-field');
+let resetSearchButton = document.querySelector('.reset-search');
+let inFiltered;
+let inSearched;
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
     clearFilter();
     clearField(errorField);
-
+    inSearched = null;
     let taskName = document.querySelector('.add-field').value.trim();
 
     if (!taskName) {
@@ -62,19 +65,59 @@ function changeStatus(form, id, statusValue) {
     } else {
         currentTask.status = statusValue;
     }
-    form.querySelector('.btn-status-complete').setAttribute('checked', currentTask.status == 2)
+    form.querySelector('.btn-status-complete').setAttribute('checked', currentTask.status == STATUS.completed)
     form.querySelector('.btn-status').setAttribute('data-status', currentTask.status)
     taskManager.save();
 }
-
+let filterMode;
 function filterTask(filterParam){
+    filterMode = filterParam;
     TASK_AREA.innerHTML = '';
+    let filteredTasksList = inSearched ? inSearched : taskManager.tasksList;
     if(!filterParam) {
-        taskManager.tasksList.forEach(el =>  drawTask(el.id, el.name, el.status))
+        filteredTasksList.forEach(el =>  drawTask(el.id, el.name, el.status));
+        inFiltered = null;
     } else {
-        let filteredTasks = taskManager.tasksList.filter((el, index, array) => el.status == filterParam);
+        let filteredTasks = filteredTasksList.filter((el, index, array) => el.status == filterParam);
         filteredTasks.forEach(el =>  drawTask(el.id, el.name, el.status));
+        inFiltered = filteredTasks;
+        
+        if(filteredTasks.length == 0){ 
+            TASK_AREA.innerHTML = 'Nothing';
+        }
     }
+   
+}
+function searchTask(evnt){
+    evnt.preventDefault();
+    clearField(errorField);
+
+    let serchedTasksList = inFiltered ? inFiltered : taskManager.tasksList;
+    let searchValue = document.querySelector('.search-form .search-field').value.trim();
+
+    if(searchValue != '') {
+        TASK_AREA.innerHTML = '';
+        resetSearchButton.classList.add('open');
+
+        let serchedTasks = serchedTasksList.filter((el, index, array) => el.name == searchValue);
+        serchedTasks.forEach(el =>  drawTask(el.id, el.name, el.status));
+        inSearched = serchedTasks;
+
+        if(serchedTasks.length == 0){ 
+            TASK_AREA.innerHTML = 'Nothing';
+        }
+
+    } else {
+        errorField.innerHTML = "Empty field";
+        inSearched = null;
+    }
+}
+function resetSearchTask(evnt) {
+    evnt.preventDefault();
+    document.querySelector('.search-field').value = '';
+    inSearched = null;
+    filterTask(filterMode);
+    resetSearchButton.classList.remove('open');
 }
 function clearFilter() {
     filterTask();
@@ -91,5 +134,7 @@ export {
     saveTask,
     cancelTask,
     changeStatus,
-    filterTask
+    filterTask,
+    searchTask,
+    resetSearchTask
 };

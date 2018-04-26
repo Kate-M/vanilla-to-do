@@ -7,7 +7,9 @@ import {
     saveTask,
     cancelTask,
     changeStatus,
-    filterTask
+    filterTask,
+    searchTask,
+    resetSearchTask
 } from './task-logic'
 
 let filterContainer = document.querySelector('.filter-task');
@@ -74,7 +76,8 @@ export function startEvents() {
             }
         }
     );
-
+    document.getElementById('search-btn').addEventListener('click', searchTask);
+    document.getElementById('reset-search-btn').addEventListener('click', resetSearchTask);
 }
 
 document.addEventListener('DOMContentLoaded', taskManager.init());

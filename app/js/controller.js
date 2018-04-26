@@ -26,7 +26,7 @@ class TaskManager {
     add(item) {
         this.tasksList.push(item);
         sendTaskInLocalDB(this.tasksList); 
-     }
+    }
 
     save() {
         sendTaskInLocalDB(this.tasksList);
