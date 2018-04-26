@@ -1,3 +1,4 @@
+import { STATUS } from './constant';
 import { TASK_AREA } from './constant';
 
 function drawTask(id, name, status) {
@@ -8,7 +9,7 @@ function drawTask(id, name, status) {
     newTask.innerHTML =
         `<form action="smth" class="form task-form">
             <fieldset class="field-wrap">
-                <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="${status==2}">
+                <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="${status==STATUS.completed}">
                 <p class="field name-field" data-id="${id}">${name}</p>
                 <input type="text" class="field edit-name-field" data-id="${id}" value="${name}">
             </fieldset>

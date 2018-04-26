@@ -109,47 +109,78 @@ exports.STATUS = STATUS;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.startEvents = startEvents;
+exports.taskManager = exports.sendTaskInLocalDB = undefined;
 
-var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _taskLogic = __webpack_require__(/*! ./task-logic */ "./app/js/task-logic.js");
+var _index = __webpack_require__(/*! ./index */ "./app/js/index.js");
 
-function startEvents() {
-    document.getElementById('add-task').addEventListener('click', _taskLogic.createNewTasks);
-    document.querySelectorAll('.tasks-wrap').forEach(function (el) {
-        return el.onclick = function (evnt) {
-            evnt.preventDefault();
-            var targetForm = evnt.target.closest('form');
-            var targetButton = evnt.target.getAttribute('data-state');
-            var targetTaskId = targetForm.querySelector('.name-field').getAttribute('data-id');
-            var targetTaskName = targetForm.querySelector('.name-field').innerHTML;
+var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
 
-            switch (targetButton) {
-                case 'delete-task':
-                    (0, _taskLogic.deleteTask)(targetTaskId);
-                    break;
-                case 'edit-task':
-                    (0, _taskLogic.editTask)(targetForm, targetTaskName, targetTaskId);
-                    break;
-                case 'cancel-task':
-                    (0, _taskLogic.cancelTask)(targetForm);
-                    break;
-                case 'save-task':
-                    (0, _taskLogic.saveTask)(targetForm, targetTaskId);
-                    break;
-                case 'status-task':
-                    (0, _taskLogic.changeStatus)(targetTaskId, _constant.STATUS.processing);
-                    break;
-                case 'status-complete-task':
-                    (0, _taskLogic.changeStatus)(targetTaskId, _constant.STATUS.completed);
-                    break;
-                default:
-                    console.log('other');
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var TaskManager = function () {
+    function TaskManager() {
+        _classCallCheck(this, TaskManager);
+
+        this.tasksList = [];
+    }
+
+    _createClass(TaskManager, [{
+        key: 'init',
+        value: function init() {
+            if (typeof Storage !== "undefined") {
+                if (localStorage.getItem('tasksDB')) {
+                    this.tasksList = JSON.parse(localStorage.getItem("tasksDB"));
+                    this.tasksList.forEach(function (el) {
+                        return (0, _dom.drawTask)(el.id, el.name, el.status);
+                    });
+                }
+            } else {
+                console.log('Sorry! No Web Storage support');
             }
-        };
-    });
+            (0, _index.startEvents)();
+        }
+    }, {
+        key: 'get',
+        value: function get(id) {
+            return this.tasksList.filter(function (el, index, array) {
+                return el.id == id;
+            })[0];
+        }
+    }, {
+        key: 'add',
+        value: function add(item) {
+            this.tasksList.push(item);
+            sendTaskInLocalDB(this.tasksList);
+        }
+    }, {
+        key: 'save',
+        value: function save() {
+            sendTaskInLocalDB(this.tasksList);
+        }
+    }, {
+        key: 'delete',
+        value: function _delete(id) {
+            this.tasksList = this.tasksList.filter(function (i) {
+                return i.id != id;
+            });
+            sendTaskInLocalDB(this.tasksList);
+        }
+    }]);
+
+    return TaskManager;
+}();
+
+var taskManager = new TaskManager();
+
+function sendTaskInLocalDB(tasksList) {
+    var serialTasksList = JSON.stringify(tasksList);
+    localStorage.setItem("tasksDB", serialTasksList);
 }
+
+exports.sendTaskInLocalDB = sendTaskInLocalDB;
+exports.taskManager = taskManager;
 
 /***/ }),
 
@@ -175,7 +206,7 @@ function drawTask(id, name, status) {
     newTask.setAttribute('class', 'tasks-wrap');
     _constant.TASK_AREA.insertBefore(newTask, _constant.TASK_AREA.firstChild);
 
-    newTask.innerHTML = '<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == 2) + '">\n                <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>';
+    newTask.innerHTML = '<form action="smth" class="form task-form">\n            <fieldset class="field-wrap">\n                <input type="checkbox" class="btn-status-complete" data-state ="status-complete-task" checked="' + (status == _constant.STATUS.completed) + '">\n                <p class="field name-field" data-id="' + id + '">' + name + '</p>\n                <input type="text" class="field edit-name-field" data-id="' + id + '" value="' + name + '">\n            </fieldset>\n            <div class="btn-group">\n                <button class="btn btn-sm btn-status" data-state ="status-task" data-status="' + status + '"></button>\n                <button class="btn btn-sm btn-edit" data-state ="edit-task"></button>\n                <button class="btn btn-sm btn-delete-item" data-state ="delete-task"></button>\n                <button class="btn btn-sm btn-save" data-state="save-task"></button>\n                <button class="btn btn-sm btn-cancel" data-state="cancel-task"></button>\n            </div>\n        </form>';
 }
 
 exports.drawTask = drawTask;
@@ -195,38 +226,73 @@ exports.drawTask = drawTask;
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.tasksList = undefined;
-exports.sendTaskInLocalDB = sendTaskInLocalDB;
+exports.startEvents = startEvents;
+
+var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
 var _controller = __webpack_require__(/*! ./controller */ "./app/js/controller.js");
 
-var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
+var _taskLogic = __webpack_require__(/*! ./task-logic */ "./app/js/task-logic.js");
 
-var tasksList = exports.tasksList = [];
+var filterContainer = document.querySelector('.filter-task');
 
-function init() {
-
-    if (typeof Storage !== "undefined") {
-        if (localStorage.getItem('tasksDB')) {
-            exports.tasksList = tasksList = JSON.parse(localStorage.getItem("tasksDB"));
-            tasksList.forEach(function (el) {
-                return (0, _dom.drawTask)(el.id, el.name, el.status);
-            });
+function startEvents() {
+    document.getElementById('add-task').addEventListener('click', _taskLogic.createNewTasks);
+    document.getElementById('tasks-container').addEventListener('click', function (evnt) {
+        evnt.preventDefault();
+        var targetForm = evnt.target.closest('form');
+        var targetContainer = targetForm.parentNode;
+        var targetButton = evnt.target.getAttribute('data-state');
+        var targetTaskId = targetForm.querySelector('.name-field').getAttribute('data-id');
+        var targetTaskName = targetForm.querySelector('.name-field').innerHTML;
+        switch (targetButton) {
+            case 'delete-task':
+                (0, _taskLogic.deleteTask)(targetTaskId, targetContainer);
+                console.log(targetTaskId);
+                break;
+            case 'edit-task':
+                (0, _taskLogic.editTask)(targetForm, targetTaskName, targetTaskId);
+                break;
+            case 'cancel-task':
+                (0, _taskLogic.cancelTask)(targetForm);
+                break;
+            case 'save-task':
+                (0, _taskLogic.saveTask)(targetForm, targetTaskId);
+                break;
+            case 'status-task':
+                (0, _taskLogic.changeStatus)(targetForm, targetTaskId, _constant.STATUS.processing);
+                break;
+            case 'status-complete-task':
+                (0, _taskLogic.changeStatus)(targetForm, targetTaskId, _constant.STATUS.completed);
+                break;
         }
-    } else {
-        console.log('Sorry! No Web Storage support');
-    }
-
-    (0, _controller.startEvents)();
+    });
+    document.querySelector('.filter-btn').onclick = function () {
+        filterContainer.classList.toggle('open');
+    };
+    document.querySelectorAll('.filter-item').forEach(function (el) {
+        return el.onclick = function (evnt) {
+            evnt.preventDefault();
+            filterContainer.classList.remove('open');
+            var targetFilter = evnt.target.getAttribute('data-filter');
+            switch (targetFilter) {
+                case 'filter-all':
+                    (0, _taskLogic.filterTask)();
+                    break;
+                case 'filter-in-progress':
+                    (0, _taskLogic.filterTask)(_constant.STATUS.processing);
+                    break;
+                case 'filter-complete':
+                    (0, _taskLogic.filterTask)(_constant.STATUS.completed);
+                    break;
+                default:
+                    (0, _taskLogic.filterTask)();
+            }
+        };
+    });
 }
 
-function sendTaskInLocalDB(tasksList, reload) {
-    var serialTasksList = JSON.stringify(tasksList);
-    localStorage.setItem("tasksDB", serialTasksList);
-    location.reload();
-}
-
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', _controller.taskManager.init());
 
 /***/ }),
 
@@ -243,72 +309,84 @@ document.addEventListener('DOMContentLoaded', init);
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.changeStatus = exports.cancelTask = exports.saveTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
+exports.filterTask = exports.changeStatus = exports.cancelTask = exports.saveTask = exports.editTask = exports.deleteTask = exports.createNewTasks = undefined;
 
 var _constant = __webpack_require__(/*! ./constant */ "./app/js/constant.js");
 
-var _index = __webpack_require__(/*! ./index */ "./app/js/index.js");
+var _controller = __webpack_require__(/*! ./controller */ "./app/js/controller.js");
 
 var _dom = __webpack_require__(/*! ./dom */ "./app/js/dom.js");
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
-
+    var errorField = document.querySelector('.add-task .error');
+    errorField.innerHTML = '';
     var taskName = document.querySelector('.add-field').value.trim();
 
     if (!taskName) {
-        document.querySelector('.add-task .error').innerHTML = "Invalid value";
+        errorField.innerHTML = "Invalid value";
     } else {
         var taskId = new Date().valueOf() + '_' + taskName;
-        _index.tasksList.push({
+        _controller.taskManager.add({
             status: _constant.STATUS.default,
             id: taskId,
             name: taskName
         });
         document.querySelector('.add-field').value = '';
-        (0, _index.sendTaskInLocalDB)(_index.tasksList);
         (0, _dom.drawTask)(taskId, taskName, _constant.STATUS.default);
     }
 }
-function deleteTask(id) {
-    var list = _index.tasksList.filter(function (el, index, arr) {
-        return arr[index].id != id;
-    });
-    (0, _index.sendTaskInLocalDB)(list);
+function deleteTask(id, container) {
+    container.parentNode.removeChild(container);
+    _controller.taskManager.delete(id);
 };
 
 function editTask(form, name, id) {
     form.classList.add('edit-mode');
-};
+}
 
 function saveTask(form, id) {
     var newTaskName = form.querySelector('.edit-name-field').value.trim();
-    var currentTask = _index.tasksList.filter(function (el, index, array) {
-        return array[index].id == id && newTaskName != '';
-    });
-    currentTask[0].name = newTaskName;
-    (0, _index.sendTaskInLocalDB)(_index.tasksList);
+    var task = _controller.taskManager.get(id);
+    task.name = newTaskName;
+    _controller.taskManager.save();
+
+    var labelTask = form.querySelector('.name-field');
+    labelTask.innerHTML = newTaskName;
+    form.classList.remove('edit-mode');
 };
 
 function cancelTask(form) {
     form.classList.remove('edit-mode');
-    console.log(form);
 };
 
-function changeStatus(id, statusValue) {
-    var currentTask = selectTask(id);
-    if (currentTask[0].status == statusValue) {
-        currentTask[0].status = _constant.STATUS.default;
+function changeStatus(form, id, statusValue) {
+    var currentTask = _controller.taskManager.get(id);
+
+    if (currentTask.status == statusValue) {
+        currentTask.status = _constant.STATUS.default;
     } else {
-        currentTask[0].status = statusValue;
+        currentTask.status = statusValue;
     }
-    (0, _index.sendTaskInLocalDB)(_index.tasksList);
+    form.querySelector('.btn-status-complete').setAttribute('checked', currentTask.status == 2);
+    form.querySelector('.btn-status').setAttribute('data-status', currentTask.status);
+    _controller.taskManager.save();
 }
 
-function selectTask(id) {
-    return _index.tasksList.filter(function (el, index, array) {
-        return array[index].id == id;
-    });
+function filterTask(filterParam) {
+    _constant.TASK_AREA.innerHTML = '';
+    if (!filterParam) {
+        _controller.taskManager.tasksList.forEach(function (el) {
+            return (0, _dom.drawTask)(el.id, el.name, el.status);
+        });
+    } else {
+        var filteredTasks = _controller.taskManager.tasksList.filter(function (el, index, array) {
+            return el.status == filterParam;
+        });
+        filteredTasks.forEach(function (el) {
+            return (0, _dom.drawTask)(el.id, el.name, el.status);
+        });
+    }
 }
 
 exports.createNewTasks = createNewTasks;
@@ -317,6 +395,7 @@ exports.editTask = editTask;
 exports.saveTask = saveTask;
 exports.cancelTask = cancelTask;
 exports.changeStatus = changeStatus;
+exports.filterTask = filterTask;
 
 /***/ }),
 

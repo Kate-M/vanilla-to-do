@@ -1,13 +1,11 @@
 .tasks-container {
-    @media screen and (min-width: 767px) {
-        width: 50%;
+    width: 50%;
+    @media screen and (max-width: 767px) {
+        width: 100%;
     }
 }    
 .tasks-wrap {
-    border: 1px solid #e7e7e7;
-    background: #F4F4F4;
-    padding: 10px;
-    border-radius: 3px;
+    
     &:not(:last-child) {
         margin-bottom: 10px;
     }

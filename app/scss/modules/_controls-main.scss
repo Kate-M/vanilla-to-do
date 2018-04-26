@@ -2,12 +2,24 @@
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    height: 35px;
+    .control-item {
+        height: 35px;
+        @media screen and (max-width: 767px) {
+            width:100%;
+        }
+        &:not(:last-child){
+            @media screen and (max-width: 767px) {
+                margin-bottom: 10px;
+            }
+        }
+    }
     @media screen and (max-width: 767px) {
         flex-direction: column;
         align-items: flex-start;
-        .control-item:not(:last-child){
-            margin-bottom: 10px;
+    }
+    .field-wrap{
+        @media screen and (max-width: 767px) {
+            width:100%;
         }
     }
     input {
@@ -17,6 +29,9 @@
         border-right: 0;
         padding: 0 5px;
         border-radius:  3px 0 0 3px;
+        @media screen and (max-width: 767px) {
+            width:100%;
+        }
     }
     .add-btn {
         &::after {
@@ -38,15 +53,17 @@
         color:#F1646C;
     }
 }
+.filter-task.open {
+    .filter-select{
+        display: block;
+    }
+}
 .filter-task {
     cursor: pointer;
     min-width: 215px;
     text-transform: uppercase;
     position: relative;
     border-radius: 3px;
-    &:hover .filter-select{
-        display: block;
-    }
     .filter-btn {
         @include center-x;
         position: relative;
