@@ -1,3 +1,4 @@
+// import "babel-polyfill";
 import { STATUS } from './constant';
 import { taskManager } from './controller';
 import {
@@ -22,16 +23,16 @@ export function startEvents() {
     document.getElementById('tasks-container').addEventListener('click',
         function (evnt) {
             evnt.preventDefault();
-            let targetForm = evnt.target.closest('form');
+            let targetElement = evnt.target;
+            let targetForm = targetElement.closest('form');
             let targetContainer = targetForm.parentNode;
             let targetButton = evnt.target.getAttribute('data-state');
             let targetTaskId = targetForm.querySelector('.name-field').getAttribute('data-id');
             let targetTaskName = targetForm.querySelector('.name-field').innerHTML;
-            
+
             switch (targetButton) {
                 case 'delete-task':
                     deleteTask(targetTaskId, targetContainer);
-                    console.log(targetTaskId);
                     break;
                 case 'edit-task':
                     editTask(targetForm);

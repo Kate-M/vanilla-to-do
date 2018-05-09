@@ -15,6 +15,7 @@
     "author": "Kate-M",
     "license": "ISC",
     "dependencies": {
+        "babel-polyfill": "^6.26.0",
         "materialize-css": "^1.0.0-beta",
         "reset-css": "^3.0.0",
         "webpack-livereload-plugin": "^2.1.1"

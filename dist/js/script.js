@@ -235,14 +235,15 @@ var _controller = __webpack_require__(/*! ./controller */ "./app/js/controller.j
 
 var _taskLogic = __webpack_require__(/*! ./task-logic */ "./app/js/task-logic.js");
 
-var filterContainer = document.querySelector('.filter-task');
+var filterContainer = document.querySelector('.filter-task'); // import "babel-polyfill";
 var filterButton = exports.filterButton = document.querySelector('.filter-btn');
 
 function startEvents() {
     document.getElementById('add-task').addEventListener('click', _taskLogic.createNewTasks);
     document.getElementById('tasks-container').addEventListener('click', function (evnt) {
         evnt.preventDefault();
-        var targetForm = evnt.target.closest('form');
+        var targetElement = evnt.target;
+        var targetForm = targetElement.closest('form');
         var targetContainer = targetForm.parentNode;
         var targetButton = evnt.target.getAttribute('data-state');
         var targetTaskId = targetForm.querySelector('.name-field').getAttribute('data-id');
@@ -251,7 +252,6 @@ function startEvents() {
         switch (targetButton) {
             case 'delete-task':
                 (0, _taskLogic.deleteTask)(targetTaskId, targetContainer);
-                console.log(targetTaskId);
                 break;
             case 'edit-task':
                 (0, _taskLogic.editTask)(targetForm);
@@ -334,6 +334,7 @@ var addFied = document.querySelector('.add-field');
 var resetSearchButton = document.querySelector('.reset-search');
 var inFiltered = void 0;
 var inSearched = void 0;
+var filterMode = void 0;
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
@@ -360,7 +361,9 @@ function deleteTask(id, container) {
     if (container) {
         container.parentNode.removeChild(container);
     }
-    _controller.taskManager.delete(id);
+    if (id) {
+        _controller.taskManager.delete(id);
+    }
 };
 
 function editTask(form) {
@@ -397,7 +400,7 @@ function changeStatus(form, id, statusValue) {
     form.querySelector('.btn-status').setAttribute('data-status', currentTask.status);
     _controller.taskManager.save();
 }
-var filterMode = void 0;
+
 function filterTask(filterParam) {
     filterMode = filterParam;
     _constant.TASK_AREA.innerHTML = '';
@@ -464,10 +467,9 @@ function removeCompletedTasks(evnt) {
     checkTasks.forEach(function (el) {
         if (el.getAttribute('checked') == 'true') {
             var removerForm = el.closest('form');
-            removerForm.parentNode.removeChild(removerForm);
+            deleteTask(false, removerForm);
         }
     });
-
     removetList.forEach(function (el) {
         return deleteTask(el.id);
     });
