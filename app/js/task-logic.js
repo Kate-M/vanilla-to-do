@@ -8,6 +8,7 @@ let addFied = document.querySelector('.add-field');
 let resetSearchButton = document.querySelector('.reset-search');
 let inFiltered;
 let inSearched;
+let filterMode;
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
@@ -73,7 +74,7 @@ function changeStatus(form, id, statusValue) {
     form.querySelector('.btn-status').setAttribute('data-status', currentTask.status)
     taskManager.save();
 }
-let filterMode;
+
 function filterTask(filterParam) {
     filterMode = filterParam;
     TASK_AREA.innerHTML = '';

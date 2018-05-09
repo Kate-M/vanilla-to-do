@@ -24,32 +24,12 @@ export function startEvents() {
         function (evnt) {
             evnt.preventDefault();
             let targetElement = evnt.target;
-            
-
-            if (!Element.prototype.matches) {
-                Element.prototype.matches = Element.prototype.msMatchesSelector;
-            }
-            
-            (function(e){ 
-                e.closest = e.closest || function(css){ 
-                  var node = this;
-                 
-                  while (node) { 
-                     if (node.matches(css)) return node; 
-                     else node = node.parentElement; 
-                  } 
-                  return null; 
-                } 
-               })(Element.prototype);
-
-
             let targetForm = targetElement.closest('form');
-
             let targetContainer = targetForm.parentNode;
             let targetButton = evnt.target.getAttribute('data-state');
             let targetTaskId = targetForm.querySelector('.name-field').getAttribute('data-id');
             let targetTaskName = targetForm.querySelector('.name-field').innerHTML;
-            
+
             switch (targetButton) {
                 case 'delete-task':
                     deleteTask(targetTaskId, targetContainer);

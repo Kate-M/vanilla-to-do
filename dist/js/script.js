@@ -243,24 +243,7 @@ function startEvents() {
     document.getElementById('tasks-container').addEventListener('click', function (evnt) {
         evnt.preventDefault();
         var targetElement = evnt.target;
-
-        if (!Element.prototype.matches) {
-            Element.prototype.matches = Element.prototype.msMatchesSelector;
-        }
-
-        (function (e) {
-            e.closest = e.closest || function (css) {
-                var node = this;
-
-                while (node) {
-                    if (node.matches(css)) return node;else node = node.parentElement;
-                }
-                return null;
-            };
-        })(Element.prototype);
-
         var targetForm = targetElement.closest('form');
-
         var targetContainer = targetForm.parentNode;
         var targetButton = evnt.target.getAttribute('data-state');
         var targetTaskId = targetForm.querySelector('.name-field').getAttribute('data-id');
@@ -351,6 +334,7 @@ var addFied = document.querySelector('.add-field');
 var resetSearchButton = document.querySelector('.reset-search');
 var inFiltered = void 0;
 var inSearched = void 0;
+var filterMode = void 0;
 
 function createNewTasks(evnt) {
     evnt.preventDefault();
@@ -416,7 +400,7 @@ function changeStatus(form, id, statusValue) {
     form.querySelector('.btn-status').setAttribute('data-status', currentTask.status);
     _controller.taskManager.save();
 }
-var filterMode = void 0;
+
 function filterTask(filterParam) {
     filterMode = filterParam;
     _constant.TASK_AREA.innerHTML = '';
